@@ -173,9 +173,6 @@ export default function Home() {
     // Submit info
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        alert(process.env.NEXT_PUBLIC_EC2_URL);
-
         const res = await fetch(`${process.env.NEXT_PUBLIC_EC2_URL}/api/route`, {
             method: "POST",
             headers: {
