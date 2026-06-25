@@ -1,4 +1,6 @@
-from flask import Flask, request, send_file
+import os
+import glob
+from flask import Flask, request, send_file, after_this_request, Response
 from flask_cors import CORS
 from pylatex import Document, Section, Command, NoEscape, Package, escape_latex
 from datetime import datetime
@@ -19,11 +21,34 @@ def generate():
 
     pdf_path = create_pdf(form)
 
-    return send_file(
-        pdf_path,
-        as_attachment=True,
-        download_name="resume.pdf"
+    # Store PDF to ram
+    with open(pdf_path, "rb") as f:
+        pdf_bytes = f.read()
+
+    # Delete files from storage
+    try:
+        cleanup_output_files()
+    except Exception as e:
+        print("Cleanup error:", e)
+
+
+    return Response(
+        pdf_bytes,
+        mimetype="application/pdf",
+        headers={
+            "Content-Disposition": "attachment; filename=resume.pdf"
+        }
     )
+
+# -------------------------
+# DELETE ALL FILES
+# -------------------------
+def cleanup_output_files():
+    for file_path in glob.glob("output_doc*"):
+        try:
+            os.remove(file_path)
+        except Exception as e:
+            print("Failed to delete:", file_path, e)
 
 # -------------------------
 # CREATE FINAL PDF
@@ -75,6 +100,8 @@ def create_pdf(form):
                     doc.append(NoEscape(rf"\item {b}"))
                     
                 doc.append(NoEscape(r"\end{itemize}"))
+        
+        doc.append(NoEscape(rf"""\vspace{{-0.5em}}"""))
 
     # --------------------
     # EXPERIENCE
@@ -100,6 +127,8 @@ def create_pdf(form):
                     doc.append(NoEscape(rf"\item {b}"))
                     
                 doc.append(NoEscape(r"\end{itemize}"))
+
+        doc.append(NoEscape(rf"""\vspace{{-0.5em}}"""))
 
 
     # --------------------
@@ -143,7 +172,34 @@ def create_pdf(form):
                     doc.append(NoEscape(rf"\item {b}"))
                     
                 doc.append(NoEscape(r"\end{itemize}"))
-                
+
+        doc.append(NoEscape(rf"""\vspace{{-0.5em}}"""))
+
+    # --------------------
+    # TECHNICAL SKILLS
+    # --------------------
+    skills = form.get("skills",[])
+    if skills:
+        doc.append(NoEscape(rf"""
+        \begin{{tabularx}}{{\textwidth}}{{X}}
+        """))
+        doc.append(NoEscape(r"\ressection{Technical Skills}"))
+        for item in skills:
+            skill = item.get("content","")
+            skill_list = ", ".join(
+                escape_latex(t.strip())
+                for t in skill.split(",")
+                if t.strip()
+            )
+            doc.append(NoEscape(rf"""
+            \textbf{{{item["title"]}:}} {skill_list} \\
+            """))
+        
+        doc.append(NoEscape(rf"""
+        \end{{tabularx}}
+        """))
+
+
     file_path = "output_document"
     doc.generate_pdf(file_path, clean_tex=False)
 

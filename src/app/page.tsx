@@ -8,6 +8,11 @@ type ResumeLink = {
     href:string;
 }
 
+type SkillItem = {
+    title: string;
+    content: string; 
+}
+
 type ResumeItem = {
     title: string;
     subtitle: string;
@@ -24,6 +29,7 @@ type FormState = {
     experience: ResumeItem[];
     projects: ResumeItem[];
     links: ResumeLink[];
+    skills: SkillItem[];
 };
 
 export default function Home() {
@@ -57,6 +63,10 @@ export default function Home() {
             dateEnd: "",
             content: "",
         }],
+        skills:[{
+            title:"",
+            content:"",
+        }]
     };
 
     const [form, setForm] = useState<FormState>(initialForm);
@@ -168,6 +178,46 @@ export default function Home() {
         links: updated,
         };
     });
+    };
+
+    // Add skill
+    const addSkill = () => {
+        setForm(prev => ({
+            ...prev,
+            skills: [
+                ...prev.skills,
+                { title: "", content: "" }
+            ],
+        }));
+    };
+
+    // Remove skill
+    const removeSkill = (index: number) => {
+        setForm(prev => ({
+            ...prev,
+            skills: prev.skills.filter((_, i) => i !== index),
+        }));
+    };
+
+    // Update Skill
+    const updateSkill = (
+        index: number,
+        key: keyof SkillItem,
+        value: string
+    ) => {
+        setForm(prev => {
+            const updated = [...prev.skills];
+
+            updated[index] = {
+                ...updated[index],
+                [key]: value,
+            };
+
+            return {
+                ...prev,
+                skills: updated,
+            };
+        });
     };
 
     // Submit info
@@ -551,6 +601,53 @@ export default function Home() {
                         variant="secondary"
                         className="w-fit self-center"
                         onClick={() => addResumeItem("projects")}
+                    />
+                </div>
+
+                {/* TECHNICAL SKILLS */}
+                <div
+                    className="flex flex-col gap-4 mb-4"
+                >
+                    <h2>Technical Skills</h2>
+                    {form.skills.map((val, i) => (
+                        <div key={i} className="flex flex-col gap-2 border border-gray-300 p-2 rounded-lg">
+                            <h3 className="mb-2">Technical Skill {i+1}</h3>
+                            <label>Skill Name</label>
+                            <input
+                                value={val.title}
+                                placeholder="Programming Languages, Tools, Languages, etc..."
+                                onChange={(e) =>
+                                    updateSkill(i, "title", e.target.value)
+                                }
+                                required
+                            />
+
+                            <label>Content (Comma Seperated)</label>
+                            <input
+                                value={val.content}
+                                placeholder="Enter Company Name"
+                                onChange={(e) =>
+                                    updateSkill(i, "content", e.target.value)
+                                }
+                                required
+                            />
+
+                            <Button
+                                text="Remove"
+                                type="button"
+                                variant="red"
+                                className="py-2! px-4! min-h-fit"
+                                onClick={() => removeSkill(i)}
+                            />
+                        </div>
+                    ))}
+
+                    <Button 
+                        text="+ Add Skill"
+                        type="button" 
+                        variant="secondary"
+                        className="w-fit self-center"
+                        onClick={addSkill}
                     />
                 </div>
 
