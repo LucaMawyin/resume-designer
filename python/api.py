@@ -192,7 +192,7 @@ def create_pdf(form):
                 if t.strip()
             )
             doc.append(NoEscape(rf"""
-            \textbf{{{item["title"]}:}} {skill_list} \\
+            \textbf{{{escape_latex(item["title"])}:}} {skill_list} \\
             """))
         
         doc.append(NoEscape(rf"""
