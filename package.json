@@ -14,9 +14,13 @@
   },
   "dependencies": {
     "@opennextjs/cloudflare": "^1.19.9",
+    "@types/react-latex": "^2.0.3",
+    "katex": "^0.17.0",
     "next": "16.2.6",
     "react": "^19.1.7",
-    "react-dom": "^19.1.7"
+    "react-dom": "^19.1.7",
+    "react-katex": "^3.1.0",
+    "react-latex": "^2.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
@@ -24,6 +28,7 @@
     "@types/node": "^20.19.43",
     "@types/react": "^19.1.7",
     "@types/react-dom": "^19.1.7",
+    "@types/react-katex": "^3.0.4",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "tailwindcss": "^4.3.1",

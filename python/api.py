@@ -1,0 +1,273 @@
+from flask import Flask, request, send_file
+from flask_cors import CORS
+from pylatex import Document, Section, Command, NoEscape, Package, escape_latex
+from datetime import datetime
+
+app = Flask(__name__)
+CORS(app)
+
+'''
+Commands:
+
+cd .\python\
+flask --app api run --debug
+'''
+
+@app.route('/api/route', methods=['POST'])
+def generate():
+    form = request.get_json() or {}
+
+    pdf_path = create_pdf(form)
+
+    return send_file(
+        pdf_path,
+        as_attachment=True,
+        download_name="resume.pdf"
+    )
+
+# -------------------------
+# CREATE FINAL PDF
+# -------------------------
+def create_pdf(form):
+    name = form.get("name", "No Name")
+    number = form.get("number","")
+    formatted_number = format_phone(number)
+    email = form.get("email","")
+
+    doc = create_document(name)
+
+    doc.append(NoEscape(rf"""
+    \begin{{center}}
+        {{\Huge \textbf{{{name}}}}} \\[1em]
+        \href{{tel:{number}}}{formatted_number} $|$
+        \href{{mailto:{email}}}{email}
+    \end{{center}}
+    """))
+
+    # --------------------
+    # EDUCATION
+    # --------------------
+    education = form.get("education", [])
+    if education:
+        doc.append(NoEscape(r"\ressection{Education}"))
+
+        for item in reversed(education):
+
+            bullets = [escape_latex(b) for b in parse_bullets(item.get("content", ""))]
+
+            doc.append(NoEscape(rf"""
+            \begin{{tabularx}}{{\textwidth}}{{X r}}
+                \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{escape_latex(item["subtitle"])}}} & {normalize_month_year(item["dateStart"])} -- {normalize_month_year(item["dateEnd"])}
+            \end{{tabularx}}
+            """))
+
+            # Parsing bullet Points 
+            if bullets:
+                doc.append(NoEscape(r"\begin{itemize}[leftmargin=2.5em, rightmargin=1em, itemsep=-0.2em]"))
+                for b in bullets:
+                    doc.append(NoEscape(rf"\item {b}"))
+                    
+                doc.append(NoEscape(r"\end{itemize}"))
+
+    # --------------------
+    # EXPERIENCE
+    # --------------------
+    experience = form.get("experience", [])
+    if experience:
+        doc.append(NoEscape(r"\ressection{Experience}"))
+
+        for item in reversed(experience):
+
+            bullets = [escape_latex(b) for b in parse_bullets(item.get("content", ""))]
+
+            doc.append(NoEscape(rf"""
+            \begin{{tabularx}}{{\textwidth}}{{X r}}
+                \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{escape_latex(item["subtitle"])}}} & {normalize_month_year(item["dateStart"])} -- {normalize_month_year(item["dateEnd"])}
+            \end{{tabularx}}
+            """))
+
+            # Parsing bullet Points 
+            if bullets:
+                doc.append(NoEscape(r"\begin{itemize}[leftmargin=2.5em, rightmargin=1em, itemsep=-0.2em]"))
+                for b in bullets:
+                    doc.append(NoEscape(rf"\item {b}"))
+                    
+                doc.append(NoEscape(r"\end{itemize}"))
+
+
+    # --------------------
+    # PROJECTS
+    # --------------------
+    projects = form.get("projects", [])
+    if projects:
+        doc.append(NoEscape(r"\ressection{Projects}"))
+
+        for item in projects:
+
+            bullets = [escape_latex(b) for b in parse_bullets(item.get("content", ""))]
+            
+            # Space tech items evenly
+            tech = item.get("subtitle", "")
+            tech_list = ", ".join(
+                escape_latex(t.strip())
+                for t in tech.split(",")
+                if t.strip()
+            )
+
+            # Add hyperlink if given
+            link = normalize_link(item.get("dateEnd", "").strip())
+            print(link)
+            if link:
+                doc.append(NoEscape(rf"""
+                \begin{{tabularx}}{{\textwidth}}{{X r}}
+                    \textbf{{\href{{{link}}}{{{escape_latex(item["title"])}}}}} $|$ \textit{{{tech_list}}} & {normalize_month_year(item["dateStart"])}
+                \end{{tabularx}}
+                """))
+            else:
+                doc.append(NoEscape(rf"""
+                \begin{{tabularx}}{{\textwidth}}{{X r}}
+                    \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{tech_list}}} & {normalize_month_year(item["dateStart"])}
+                \end{{tabularx}}
+                """))
+
+            # Parsing bullet Points 
+            if bullets:
+                doc.append(NoEscape(r"\begin{itemize}[leftmargin=2.5em, rightmargin=1em, itemsep=-0.2em]"))
+                for b in bullets:
+                    doc.append(NoEscape(rf"\item {b}"))
+                    
+                doc.append(NoEscape(r"\end{itemize}"))
+
+
+    file_path = "output_document"
+    doc.generate_pdf(file_path, clean_tex=False)
+
+    return file_path + ".pdf"
+
+# -------------------------
+# CREATE INITIAL DOCUMENT
+# -------------------------
+def create_document(name: str):
+    doc = Document(
+        documentclass="article",
+        document_options=["letterpaper"]
+    )
+
+    doc.preamble.append(NoEscape(rf"""
+    \usepackage[margin=1in]{{geometry}}
+    \usepackage{{booktabs}}
+    \usepackage[table]{{xcolor}}
+
+    %% Support for hyperlinks and urls. The setting ``colorlinks'' sets how links
+    %% are shown in the document (with a color, without underline). We put hyperref
+    %% last---it has a tendency to break other packages when loaded before them.
+    \usepackage[colorlinks=true,
+                linkcolor=black,
+                citecolor=black,
+                urlcolor=black
+            ]{{hyperref}}
+    \usepackage{{graphicx}}
+    \usepackage{{pgffor}}
+    \usepackage{{caption}}
+    \usepackage{{tabularx}}
+    \usepackage{{enumitem}}
+    \usepackage{{fancyhdr}}
+
+    \newcommand{{\ressection}}[1]{{
+        \vspace{{1.0em}}
+        \noindent\textbf{{\large #1}}
+        \par\vspace{{0.3em}}
+        \hrule
+        \vspace{{0.6em}}
+    }}
+    \pagenumbering{{gobble}}
+
+    \setlength{{\parindent}}{{0pt}}
+    """))
+
+    # -------------------------
+    # METADATA
+    # -------------------------
+    doc.preamble.append(NoEscape(rf"""
+    \hypersetup{{
+        pdftitle={{{name} Resume}},
+        pdfauthor={name}
+    }}
+    """))
+
+    return doc
+
+# -------------------------
+# FORMAT PHONE NUMBERS
+# -------------------------
+def format_phone(number: str) -> str:
+    digits = "".join(filter(str.isdigit, number))
+
+    if len(digits) != 10:
+        return number  # fallback if invalid
+
+    return f"({digits[:3]}) {digits[3:6]}-{digits[6:]}"
+
+# -------------------------
+# PARSE BULLET POINTS
+# -------------------------
+def parse_bullets(text: str):
+
+    # Get bullet points
+    bullets = [
+        line.strip()
+        for line in text.split("-")
+        if line.strip()
+    ]
+
+    # Add a period if there isnt one
+    normalized = [
+        b if b.endswith(".") else b + "."
+        for b in bullets
+    ]
+
+    return normalized
+
+# -------------------------
+# NORMALIZE LINKS WITH https://
+# -------------------------
+def normalize_link(link:str):
+    if not link:
+        return ""
+    
+    link = link.rstrip()
+
+    if link.startswith("https://") or link.startswith("http://"):
+        return link
+
+    return f"https://{link}"
+
+# -------------------------
+# NORMALIZE MONTHS
+# -------------------------
+def normalize_month_year(value: str) -> str:
+    if not value:
+        return ""
+    
+    if value.lower().startswith("pre"):
+        return "Present"
+
+    value = value.strip()
+
+    formats = [
+        "%Y-%m",
+        "%Y/%m",
+        "%m/%Y",
+        "%B %Y",
+        "%b %Y",
+        "%b %Y",
+    ]
+
+    for fmt in formats:
+        try:
+            dt = datetime.strptime(value, fmt)
+            return dt.strftime("%b %Y")
+        except ValueError:
+            continue
+
+    return value
