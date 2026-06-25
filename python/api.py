@@ -101,8 +101,6 @@ def create_pdf(form):
                     
                 doc.append(NoEscape(r"\end{itemize}"))
         
-        doc.append(NoEscape(rf"""\vspace{{-0.5em}}"""))
-
     # --------------------
     # EXPERIENCE
     # --------------------
@@ -127,9 +125,6 @@ def create_pdf(form):
                     doc.append(NoEscape(rf"\item {b}"))
                     
                 doc.append(NoEscape(r"\end{itemize}"))
-
-        doc.append(NoEscape(rf"""\vspace{{-0.5em}}"""))
-
 
     # --------------------
     # PROJECTS
@@ -173,8 +168,6 @@ def create_pdf(form):
                     
                 doc.append(NoEscape(r"\end{itemize}"))
 
-        doc.append(NoEscape(rf"""\vspace{{-0.5em}}"""))
-
     # --------------------
     # TECHNICAL SKILLS
     # --------------------
@@ -215,7 +208,7 @@ def create_document(name: str):
     )
 
     doc.preamble.append(NoEscape(rf"""
-    \usepackage[margin=1in]{{geometry}}
+    \usepackage[margin=0.75in]{{geometry}}
     \usepackage{{booktabs}}
     \usepackage[table]{{xcolor}}
 
