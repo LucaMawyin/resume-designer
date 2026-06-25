@@ -3,6 +3,11 @@
 import Button from "@/components/Button";
 import { useEffect, useState } from "react";
 
+type ResumeLink = {
+    title:string;
+    href:string;
+}
+
 type ResumeItem = {
     title: string;
     subtitle: string;
@@ -18,6 +23,7 @@ type FormState = {
     education: ResumeItem[];
     experience: ResumeItem[];
     projects: ResumeItem[];
+    links: ResumeLink[];
 };
 
 export default function Home() {
@@ -26,6 +32,10 @@ export default function Home() {
         name: "",
         number: "",
         email: "",
+        links:[{
+            title:"",
+            href:""
+        }],
         education: [{
             title: "",
             subtitle: "",
@@ -53,8 +63,15 @@ export default function Home() {
 
     useEffect(() => {
         const saved = localStorage.getItem("resume-form");
+
         if (saved) {
-            setForm(JSON.parse(saved));
+            const parsed = JSON.parse(saved);
+
+            setForm({
+            ...initialForm,
+            ...parsed,
+            links: parsed.links ?? initialForm.links,
+            });
         }
     }, []);
 
@@ -118,6 +135,39 @@ export default function Home() {
             ...prev,
             [section]: prev[section].filter((_, i) => i !== index),
         }));
+    };
+
+    // Add resume link
+    const addLink = () => {
+        setForm(prev => ({
+            ...prev,
+            links: [...prev.links, { title: "", href: "" }],
+        }));
+    };
+
+    // Remove resume link
+    const removeLink = (index: number) => {
+        setForm(prev => ({
+            ...prev,
+            links: prev.links.filter((_, i) => i !== index),
+        }));
+    };
+
+    // Update resume links
+    const updateLink = (index: number, key: keyof ResumeLink, value: string) => {
+    setForm(prev => {
+        const updated = [...prev.links];
+
+        updated[index] = {
+        ...updated[index],
+        [key]: value,
+        };
+
+        return {
+        ...prev,
+        links: updated,
+        };
+    });
     };
 
     // Submit info
@@ -226,6 +276,50 @@ export default function Home() {
                         placeholder="Enter email"
                         required
                     />
+                </div>
+
+                {/* LINKS */}
+                <div className="flex flex-col gap-2 mt-4">
+                    <h2>Links</h2>
+
+                    {form.links.map((link, i) => (
+                        <div key={i} className="flex flex-col gap-2 border border-gray-300 p-2 rounded-lg">
+                            <h3 className="mb-2">Link {i+1}</h3>
+
+                            <label>Website Name</label>
+                            <input
+                                placeholder="GitHub, LinkedIn, etc..."
+                                value={link.title}
+                                onChange={(e) => updateLink(i, "title", e.target.value)}
+                                className="border"
+                            />
+
+                            <label>Website URL</label>
+                            <input
+                                placeholder="Enter URL"
+                                value={link.href}
+                                onChange={(e) => updateLink(i, "href", e.target.value)}
+                                className="border"
+                            />
+
+                            <Button
+                                text="Remove"
+                                type="button"
+                                variant="red"
+                                className="py-2! px-4! min-h-fit!"
+                                onClick={() => removeLink(i)}
+                            />
+                        </div>
+                    ))}
+
+                    <Button 
+                        text="+ Add Link"
+                        type="button" 
+                        variant="secondary"
+                        className="w-fit self-center"
+                        onClick={addLink}
+                    />
+                        
                 </div>
                 
                 {/* EDUCATION */}

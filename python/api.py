@@ -35,12 +35,19 @@ def create_pdf(form):
     email = form.get("email","")
 
     doc = create_document(name)
+    
+    links = form.get("links",[])
+    links_latex = " $|$ ".join(
+        rf"\href{{{normalize_link(link['href'])}}}{{{link['title']}}}"
+        for link in links if link.get("href") and link.get("title")
+    )
 
     doc.append(NoEscape(rf"""
     \begin{{center}}
         {{\Huge \textbf{{{name}}}}} \\[1em]
-        \href{{tel:{number}}}{formatted_number} $|$
-        \href{{mailto:{email}}}{email}
+        \href{{tel:{number}}}{{{formatted_number}}} $|$
+        \href{{mailto:{email}}}{{{email}}}
+        {f"$|$ {links_latex}" if links_latex else ""}
     \end{{center}}
     """))
 
