@@ -159,7 +159,7 @@ def create_pdf(form):
                 \end{{tabularx}}
                 """))
 
-            doc.append(NoEscape(r"\vspace{{-0.3em}}"))
+            doc.append(NoEscape(r"\vspace{{0.3em}}"))
 
             # Parsing bullet Points 
             if bullets:
