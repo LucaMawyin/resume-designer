@@ -271,3 +271,6 @@ def normalize_month_year(value: str) -> str:
             continue
 
     return value
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
