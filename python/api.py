@@ -37,7 +37,6 @@ def create_pdf(form):
     doc = create_document(name)
     
     links = form.get("links",[])
-    print(links)
     links_latex = " $|$ ".join(
         rf"\href{{{normalize_link(link['href'])}}}{{{link['title']}}}"
         for link in links if link.get("href") and link.get("title")
@@ -145,6 +144,7 @@ def create_pdf(form):
                     
                 doc.append(NoEscape(r"\end{itemize}"))
 
+    doc.append(NoEscape(r"\ressection{Test Section}"))
 
     file_path = "output_document"
     doc.generate_pdf(file_path, clean_tex=False)
