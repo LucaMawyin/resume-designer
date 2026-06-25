@@ -37,6 +37,7 @@ def create_pdf(form):
     doc = create_document(name)
     
     links = form.get("links",[])
+    print(links)
     links_latex = " $|$ ".join(
         rf"\href{{{normalize_link(link['href'])}}}{{{link['title']}}}"
         for link in links if link.get("href") and link.get("title")
