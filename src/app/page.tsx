@@ -124,7 +124,7 @@ export default function Home() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const res = await fetch(`http://18.188.104.163:5000/api/route`, {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_EC2_URL}/api/route`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
