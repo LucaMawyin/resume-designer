@@ -159,8 +159,6 @@ def create_pdf(form):
                 \end{{tabularx}}
                 """))
 
-            doc.append(NoEscape(r"\vspace{{0.3em}}"))
-
             # Parsing bullet Points 
             if bullets:
                 doc.append(NoEscape(r"\begin{itemize}[leftmargin=2.5em, rightmargin=1em, itemsep=-0.2em]"))
