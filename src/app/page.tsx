@@ -341,14 +341,16 @@ export default function Home() {
                                 value={link.title}
                                 onChange={(e) => updateLink(i, "title", e.target.value)}
                                 className="border"
+                                required
                             />
 
-                            <label>Website URL (Optional)</label>
+                            <label>Website URL</label>
                             <input
-                                placeholder="Enter URL (or leave empty)"
+                                placeholder="Enter URL"
                                 value={link.href}
                                 onChange={(e) => updateLink(i, "href", e.target.value)}
                                 className="border"
+                                required
                             />
 
                             <Button
@@ -545,10 +547,10 @@ export default function Home() {
                                 required
                             />
 
-                            <label>Tech Used (Comma Seperated)</label>
+                            <label>Details  (Comma Seperated)</label>
                             <input
                                 value={val.subtitle}
-                                placeholder="Enter Tech Stack"
+                                placeholder="Tools, Skills, Focus Areas, etc..."
                                 onChange={(e) =>
                                     updateResumeItem("projects", i, "subtitle", e.target.value)
                                 }
@@ -565,10 +567,10 @@ export default function Home() {
                                 required
                             />
 
-                            <label>Link</label>
+                            <label>Link (Optional)</label>
                             <input
                                 value={val.dateEnd}
-                                placeholder="Enter Project Link"
+                                placeholder="Enter Project Link (or Leave Empty)"
                                 onChange={(e) =>
                                     updateResumeItem("projects", i, "dateEnd", e.target.value)
                                 }
