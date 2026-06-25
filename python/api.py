@@ -208,7 +208,7 @@ def create_document(name: str):
     )
 
     doc.preamble.append(NoEscape(rf"""
-    \usepackage[margin=0.75in]{{geometry}}
+    \usepackage[top=0.5in, bottom=0.5in, left=0.75in, right=0.75in]{{geometry}}
     \usepackage{{booktabs}}
     \usepackage[table]{{xcolor}}
 
@@ -228,7 +228,6 @@ def create_document(name: str):
     \usepackage{{fancyhdr}}
 
     \newcommand{{\ressection}}[1]{{
-        \vspace{{1.0em}}
         \noindent\textbf{{\large #1}}
         \par\vspace{{0.3em}}
         \hrule
