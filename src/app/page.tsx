@@ -343,9 +343,9 @@ export default function Home() {
                                 className="border"
                             />
 
-                            <label>Website URL</label>
+                            <label>Website URL (Optional)</label>
                             <input
-                                placeholder="Enter URL"
+                                placeholder="Enter URL (or leave empty)"
                                 value={link.href}
                                 onChange={(e) => updateLink(i, "href", e.target.value)}
                                 className="border"
