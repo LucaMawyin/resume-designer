@@ -123,7 +123,6 @@ def create_pdf(form):
 
             # Add hyperlink if given
             link = normalize_link(item.get("dateEnd", "").strip())
-            print(link)
             if link:
                 doc.append(NoEscape(rf"""
                 \begin{{tabularx}}{{\textwidth}}{{X r}}
