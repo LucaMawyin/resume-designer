@@ -143,9 +143,7 @@ def create_pdf(form):
                     doc.append(NoEscape(rf"\item {b}"))
                     
                 doc.append(NoEscape(r"\end{itemize}"))
-
-    doc.append(NoEscape(r"\ressection{Test Section}"))
-
+                
     file_path = "output_document"
     doc.generate_pdf(file_path, clean_tex=False)
 
