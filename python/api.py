@@ -132,7 +132,6 @@ def create_pdf(form):
     projects = form.get("projects", [])
     if projects:
         doc.append(NoEscape(r"\ressection{Projects}"))
-
         for item in projects:
 
             bullets = [escape_latex(b) for b in parse_bullets(item.get("content", ""))]
@@ -159,6 +158,8 @@ def create_pdf(form):
                     \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{tech_list}}} & {normalize_month_year(item["dateStart"])}
                 \end{{tabularx}}
                 """))
+
+            doc.append(NoEscape(r"\vspace{{-0.3em}}"))
 
             # Parsing bullet Points 
             if bullets:
@@ -247,7 +248,7 @@ def create_document(name: str):
         pdfauthor={name}
     }}
     """))
-    
+
 
     return doc
 
