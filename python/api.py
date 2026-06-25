@@ -1,8 +1,8 @@
 import os
 import glob
-from flask import Flask, request, send_file, after_this_request, Response
+from flask import Flask, request, Response
 from flask_cors import CORS
-from pylatex import Document, Section, Command, NoEscape, Package, escape_latex
+from pylatex import Document, NoEscape, escape_latex
 from datetime import datetime
 
 app = Flask(__name__)
