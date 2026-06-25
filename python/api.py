@@ -177,7 +177,6 @@ def create_pdf(form):
         \begin{{tabularx}}{{\textwidth}}{{X}}
         """))
         doc.append(NoEscape(r"\ressection{Technical Skills}"))
-        doc.append(NoEscape(rf"\vspace{{-0.5em}}"))
         for item in skills:
             skill = item.get("content","")
             skill_list = ", ".join(
