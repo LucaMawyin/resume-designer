@@ -21,7 +21,6 @@ def generate():
     form = request.get_json() or {}
 
     output_file = uuid.uuid4().hex
-    print(output_file)
     pdf_path = create_pdf(form,output_file)
 
     # Store PDF to ram
