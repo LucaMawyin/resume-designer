@@ -4,6 +4,7 @@ from flask import Flask, request, Response
 from flask_cors import CORS
 from pylatex import Document, NoEscape, escape_latex
 from datetime import datetime
+import uuid
 
 app = Flask(__name__)
 CORS(app)
@@ -19,7 +20,9 @@ flask --app api run --debug
 def generate():
     form = request.get_json() or {}
 
-    pdf_path = create_pdf(form)
+    output_file = uuid.uuid4().hex
+    print(output_file)
+    pdf_path = create_pdf(form,output_file)
 
     # Store PDF to ram
     with open(pdf_path, "rb") as f:
@@ -27,7 +30,7 @@ def generate():
 
     # Delete files from storage
     try:
-        cleanup_output_files()
+        cleanup_output_files(output_file)
     except Exception as e:
         print("Cleanup error:", e)
 
@@ -43,8 +46,8 @@ def generate():
 # -------------------------
 # DELETE ALL FILES
 # -------------------------
-def cleanup_output_files():
-    for file_path in glob.glob("output_doc*"):
+def cleanup_output_files(output_file:str):
+    for file_path in glob.glob(f"{output_file}*"):
         try:
             os.remove(file_path)
         except Exception as e:
@@ -53,7 +56,7 @@ def cleanup_output_files():
 # -------------------------
 # CREATE FINAL PDF
 # -------------------------
-def create_pdf(form):
+def create_pdf(form, output_file:str):
     name = form.get("name", "No Name")
     number = form.get("number","")
     formatted_number = format_phone(number)
@@ -192,7 +195,7 @@ def create_pdf(form):
         """))
 
 
-    file_path = "output_document"
+    file_path = output_file
     doc.generate_pdf(file_path, clean_tex=False)
 
     return file_path + ".pdf"
