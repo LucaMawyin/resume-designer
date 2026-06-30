@@ -26,12 +26,12 @@ def generate():
     # Store PDF to ram
     with open(pdf_path, "rb") as f:
         pdf_bytes = f.read()
-    """
-        # Delete files from storage
-        try:
-            cleanup_output_files(output_file)
-        except Exception as e:
-            print("Cleanup error:", e)"""
+        
+    # Delete files from storage
+    try:
+        cleanup_output_files(output_file)
+    except Exception as e:
+        print("Cleanup error:", e)
 
 
     return Response(
