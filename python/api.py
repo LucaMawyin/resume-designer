@@ -198,7 +198,7 @@ def create_pdf(form, output_file:str):
     doc.generate_pdf(
         file_path, 
         clean_tex=False,
-        compiler="pdflatex"
+        compiler="/usr/local/texlive/2026/bin/x86_64-linux/pdflatex"
     )
 
     return file_path + ".pdf"
