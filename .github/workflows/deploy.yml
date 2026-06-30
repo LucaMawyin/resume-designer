@@ -17,4 +17,5 @@ jobs:
           username: ec2-user
           key: ${{ secrets.EC2_KEY }}
           script: |
-            bash /home/ec2-user/deploy.sh
+            cd /home/ec2-user/resume-app
+            bash deploy.sh
