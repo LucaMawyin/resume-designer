@@ -213,7 +213,7 @@ def create_document(name: str):
     )
 
     doc.preamble.append(NoEscape(rf"""
-    \usepackage[margin=0.75in]{{geometry}}
+    \usepackage[margin=0.5in]{{geometry}}
     \usepackage{{booktabs}}
     \usepackage[table]{{xcolor}}
 
