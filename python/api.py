@@ -96,7 +96,7 @@ def create_pdf(form, output_file:str):
             \begin{{tabularx}}{{\textwidth}}{{X r}}
                 \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{escape_latex(item["subtitle"])}}} & {normalize_month_year(item["dateStart"])} -- {normalize_month_year(item["dateEnd"])}
             \end{{tabularx}}
-            \vspace{{-2em}}
+            \vspace{{-1.75em}}
             """))
 
             # Parsing bullet Points 
@@ -125,7 +125,7 @@ def create_pdf(form, output_file:str):
             \begin{{tabularx}}{{\textwidth}}{{X r}}
                 \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{escape_latex(item["subtitle"])}}} & {normalize_month_year(item["dateStart"])} -- {normalize_month_year(item["dateEnd"])}
             \end{{tabularx}}
-            \vspace{{-2em}}
+            \vspace{{-1.75em}}
             """))
 
             # Parsing bullet Points 
