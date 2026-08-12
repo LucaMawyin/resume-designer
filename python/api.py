@@ -93,6 +93,7 @@ def create_pdf(form, output_file:str):
             \begin{{tabularx}}{{\textwidth}}{{X r}}
                 \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{escape_latex(item["subtitle"])}}} & {normalize_month_year(item["dateStart"])} -- {normalize_month_year(item["dateEnd"])}
             \end{{tabularx}}
+            \vspace{{-2em}}
             """))
 
             # Parsing bullet Points 
@@ -118,6 +119,7 @@ def create_pdf(form, output_file:str):
             \begin{{tabularx}}{{\textwidth}}{{X r}}
                 \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{escape_latex(item["subtitle"])}}} & {normalize_month_year(item["dateStart"])} -- {normalize_month_year(item["dateEnd"])}
             \end{{tabularx}}
+            \vspace{{-2em}}
             """))
 
             # Parsing bullet Points 
@@ -153,12 +155,14 @@ def create_pdf(form, output_file:str):
                 \begin{{tabularx}}{{\textwidth}}{{X r}}
                     \textbf{{\href{{{link}}}{{{escape_latex(item["title"])}}}}} $|$ \textit{{{tech_list}}} & {normalize_month_year(item["dateStart"])}
                 \end{{tabularx}}
+                \vspace{{-2em}}
                 """))
             else:
                 doc.append(NoEscape(rf"""
                 \begin{{tabularx}}{{\textwidth}}{{X r}}
                     \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{tech_list}}} & {normalize_month_year(item["dateStart"])}
                 \end{{tabularx}}
+                \vspace{{-2em}}
                 """))
 
             # Parsing bullet Points 
@@ -198,7 +202,7 @@ def create_pdf(form, output_file:str):
     doc.generate_pdf(
         file_path, 
         clean_tex=False,
-        compiler="/usr/local/texlive/2026/bin/x86_64-linux/pdflatex"
+        compiler="pdflatex"
     )
 
     return file_path + ".pdf"
