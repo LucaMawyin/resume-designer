@@ -85,7 +85,10 @@ def create_pdf(form, output_file:str):
     if education:
         doc.append(NoEscape(r"\ressection{Education}"))
 
-        for item in reversed(education):
+        for i, item in enumerate(education):
+
+            if i > 0:
+                doc.append(NoEscape(r"\vspace{-0.3em}"))
 
             bullets = [escape_latex(b) for b in parse_bullets(item.get("content", ""))]
 
@@ -111,7 +114,10 @@ def create_pdf(form, output_file:str):
     if experience:
         doc.append(NoEscape(r"\ressection{Experience}"))
 
-        for item in reversed(experience):
+        for i, item in enumerate(experience):
+
+            if i > 0:
+                doc.append(NoEscape(r"\vspace{-0.3em}"))
 
             bullets = [escape_latex(b) for b in parse_bullets(item.get("content", ""))]
 
@@ -136,7 +142,10 @@ def create_pdf(form, output_file:str):
     projects = form.get("projects", [])
     if projects:
         doc.append(NoEscape(r"\ressection{Projects}"))
-        for item in projects:
+        for i, item in enumerate(projects):
+
+            if i > 0:
+                doc.append(NoEscape(r"\vspace{-0.3em}"))
 
             bullets = [escape_latex(b) for b in parse_bullets(item.get("content", ""))]
             
@@ -155,14 +164,14 @@ def create_pdf(form, output_file:str):
                 \begin{{tabularx}}{{\textwidth}}{{X r}}
                     \textbf{{\href{{{link}}}{{{escape_latex(item["title"])}}}}} $|$ \textit{{{tech_list}}} & {normalize_month_year(item["dateStart"])}
                 \end{{tabularx}}
-                \vspace{{-2em}}
+                \vspace{{-1.75em}}
                 """))
             else:
                 doc.append(NoEscape(rf"""
                 \begin{{tabularx}}{{\textwidth}}{{X r}}
                     \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{tech_list}}} & {normalize_month_year(item["dateStart"])}
                 \end{{tabularx}}
-                \vspace{{-2em}}
+                \vspace{{-1.75em}}
                 """))
 
             # Parsing bullet Points 
