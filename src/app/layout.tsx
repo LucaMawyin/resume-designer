@@ -1,7 +1,7 @@
 import "./globals.css";
 
 export const metadata = {
-  title: "Resume Generator",
+  title: "Resume Designer",
   description: "A website to produce LaTex-based resumes",
   icons: {
     icon: [

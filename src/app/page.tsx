@@ -275,7 +275,7 @@ export default function Home() {
                     pb-2
                 "
             >
-                Resume Generator
+                Resume Designer
             </h1>
 
             <form 
