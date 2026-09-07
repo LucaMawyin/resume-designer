@@ -38,6 +38,6 @@ jobs:
       - name: Deploy to Raspberry Pi
         run: |
           ssh ssh.lucamawyin.com <<'EOF'
-            cd /home/lucamawyin/resume-app
+            cd /home/lucamawyin/resume-designer
             bash deploy.sh
           EOF
