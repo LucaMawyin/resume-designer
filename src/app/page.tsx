@@ -223,7 +223,7 @@ export default function Home() {
     // Submit info
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        const res = await fetch(`https://api.lucamawyin.com/api/route`, {
+        const res = await fetch(`https://api.lucamawyin.com/resume/api/route`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
