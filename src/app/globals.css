@@ -25,10 +25,6 @@
     font-family: sans-serif;
 }
 
-body,html{
-    height: 100vh;
-}
-
 @layer base {
     * {
         transition: all var(--transition-duration) ease-in-out;

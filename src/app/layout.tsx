@@ -1,4 +1,6 @@
+import Footer from "@/components/Footer";
 import "./globals.css";
+import Header from "@/components/Header";
 
 export const metadata = {
   title: "Resume Designer",
@@ -23,7 +25,11 @@ export default function RootLayout({
 			<head>
 				<link rel="icon" href="/favicon.svg" type="image/svg+xml"></link>
 			</head>
-			<body>{children}</body>
+			<body>
+                <Header/>
+                {children}
+                <Footer/>
+            </body>
 		</html>
 	);
 }

@@ -249,6 +249,7 @@ export default function Home() {
         className="
             h-full 
             flex 
+            py-8
         "
     >
         {/* TILE */}
@@ -266,17 +267,6 @@ export default function Home() {
                 w-full
             "
         >
-
-            <h1
-                className="
-                    text-center
-                    leading-tight
-                    border-b
-                    pb-2
-                "
-            >
-                Resume Designer
-            </h1>
 
             <form 
                 onSubmit={handleSubmit} 
@@ -654,7 +644,7 @@ export default function Home() {
                 </div>
 
                 <Button
-                    text="Submit"
+                    text="Download Resume"
                     variant="primary"
                     type="submit" 
                     className="
