@@ -523,6 +523,10 @@ export default function Build(){
         ensureSectionItem(nextStep);
         notify(`Successfully added ${steps[step].title}`,"success")
         setStep(nextStep);
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
     };
 
     const handleReview = () => {
@@ -541,6 +545,10 @@ export default function Build(){
         }
 
         setStep(steps.length - 1);
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
     };
 
     const handleSkip = () => {
@@ -557,6 +565,10 @@ export default function Build(){
         ensureSectionItem(nextStep);
         notify(`Skipped ${steps[step].title} (not added)`,"warning");
         setStep(nextStep);
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
     };
 
     const handleBack = () => {
@@ -569,6 +581,10 @@ export default function Build(){
 
         ensureSectionItem(previousStep);
         setStep(previousStep);
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
     };
 
     const steps: {
@@ -827,6 +843,10 @@ export default function Build(){
                                     }
 
                                     setStep(index);
+                                    window.scrollTo({
+                                        top: 0,
+                                        behavior: "smooth",
+                                    });
                                 }}
                                 className={`
                                     relative
@@ -935,7 +955,7 @@ export default function Build(){
                             />
                         )}
                         <Button
-                            text={step === 0 ? "Home" : "Back"}
+                            text={step === 0 ? "Home" : step === steps.length - 1 ? "I'm Not Done Yet" : "Back"}
                             variant="tertiary"
                             type="button"
                             x={8}

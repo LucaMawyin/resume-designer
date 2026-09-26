@@ -37,7 +37,7 @@ export default function Button(props : {
         secondary: 
             `bg-blue-400 text-white ${props.disabled ? "" : "hover:bg-blue-600 hover:shadow-md"}`,
         tertiary:
-            `bg-gray-200 text-black ${props.disabled ? "" : "hover:bg-gray-300 hover:shadow-md"}`,
+            `bg-gray-200 border border-gray-300 text-black ${props.disabled ? "" : "hover:bg-gray-300 hover:border-gray-400 hover:shadow-md"}`,
         red : 
             `bg-red-600 text-white ${props.disabled ? "" : "hover:bg-red-700 hover:shadow-md"}`,
         transparent:
