@@ -11,14 +11,18 @@ export default function ResumeReview({
 }: ResumeReviewProps) {
     return (
         <div className="
+            min-w-0
+            w-full
             flex
             flex-col
             gap-4
             py-4
+            wrap-anywhere
             [&_h3]:text-center
             [&_h3]:border-b
             [&_h3]:border-gray-300
             [&_h3]:mb-2
+            [&_h4]:mt-2
         ">
             <div>
                 <h3>Personal Information</h3>
@@ -44,9 +48,16 @@ export default function ResumeReview({
                     <h3>Education</h3>
                     {form.education?.map((item, index) => (
                         <div key={index} className="flex flex-col gap-2">
-                            <h4>{item.title}<span>{item.dateStart} - {item.dateEnd}</span></h4>
+                            <h4 className="flex flex-wrap gap-x-2">
+                                {item.title}
+                                <span>
+                                    {item.dateStart} - {item.dateEnd}
+                                </span>
+                            </h4>
                             <p>{item.subtitle}</p>
-                            <p>{item.content}</p>
+                            {item.content.split(/\r?\n/).map((line, i) => (
+                                <p key={i}>{line}</p>
+                            ))}
                         </div>
                     ))}                
                 </div>
@@ -57,9 +68,16 @@ export default function ResumeReview({
                     <h3>Experience</h3>
                     {form.experience?.map((item, index) => (
                         <div key={index} className="flex flex-col gap-2">
-                            <h4>{item.title}<span>{item.dateStart} - {item.dateEnd}</span></h4>
+                            <h4 className="flex flex-wrap gap-x-2">
+                                {item.title}
+                                <span>
+                                    {item.dateStart} - {item.dateEnd}
+                                </span>
+                            </h4>
                             <p>{item.subtitle}</p>
-                            <p>{item.content}</p>
+                            {item.content.split(/\r?\n/).map((line, i) => (
+                                <p key={i}>{line}</p>
+                            ))}
                         </div>
                     ))}
                 </div>
@@ -70,10 +88,17 @@ export default function ResumeReview({
                     <h3>Projects</h3>
                     {form.projects?.map((item, index) => (
                         <div key={index} className="flex flex-col gap-2">
-                            <h4>{item.title}<span>{item.dateStart}</span></h4>
+                            <h4 className="flex flex-wrap gap-x-2">
+                                {item.title}
+                                <span>
+                                    {item.dateStart}
+                                </span>
+                            </h4>
                             <p>{item.subtitle}</p>
                             {item.dateEnd.length > 0 && <p>{item.dateEnd}</p>}
-                            <p>{item.content}</p>
+                            {item.content.split(/\r?\n/).map((line, i) => (
+                                <p key={i}>{line}</p>
+                            ))}
                         </div>
                     ))}
                 </div>

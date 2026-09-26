@@ -39,11 +39,6 @@ html, body {
     background-color: var(--bg);
 }
 
-.squircle {
-    border-radius: 48px;
-    corner-shape: squircle;
-}
-
 @layer base {
     * {
         transition: all var(--transition-duration) ease-in-out;
@@ -117,18 +112,20 @@ form {
 }
 
 .pillow {
-  
-    /* Step 2: Base color and soft gradient for depth */
     background: linear-gradient(135deg, #ffffff, #e6e6e6);
-  
-    /* Step 3: Layer shadows for the 3D cushion effect */
+
     box-shadow: 
-        /* Soft shadow underneath the pillow */
-        0 20px 30px rgba(0, 0, 0, 0.15), 
-        
-        /* Internal highlight (top-left puffiness) */
+        0 10px 16px rgba(0, 0, 0, 0.25),
+
         inset 10px 10px 20px rgba(255, 255, 255, 0.8),
-        
-        /* Internal shadow (bottom-right depth) */
         inset -10px -10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.squircle {
+    border-radius: 1.5rem;
+
+    @supports (corner-shape: squircle) {
+        corner-shape: squircle;
+        border-radius: 48px;
+    }
 }
