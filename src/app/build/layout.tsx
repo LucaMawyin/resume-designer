@@ -28,11 +28,7 @@ export default function BuildLayout({
                 flex
                 flex-1
             ">
-                <NotificationProvider>
-                    <Suspense fallback={null}>
-                        {children}
-                    </Suspense>
-                </NotificationProvider>                    
+                {children}
             </div>
         </div>
         

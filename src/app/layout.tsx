@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { Inter } from "next/font/google";
 import { NotificationProvider } from "@/components/NotificationProvider";
+import { Suspense } from "react";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -39,7 +40,10 @@ export default function RootLayout({
                     flex-1
                 ">
                     <NotificationProvider>
-                        {children}
+                        <Suspense fallback={null}>
+                            {children}
+                        </Suspense>
+                        
                     </NotificationProvider>       
                     <Footer/>             
                 </main>

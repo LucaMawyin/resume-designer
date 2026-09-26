@@ -194,7 +194,7 @@ export default function Build(){
         const numberValid = form.number.trim() !== "";
 
         if (nameValid && emailValid && numberValid) {
-            notify("Successfully loaded saved resume");
+            notify("Successfully loaded saved resume","success");
             setStep(6);
         }
         
@@ -344,24 +344,44 @@ export default function Build(){
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        const submittedForm = getSubmittedForm();
-        
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/route`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(submittedForm),
-        });
+        notify("Download request started");
 
-        const blob = await res.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "resume.pdf";
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
+        try {
+            const submittedForm = getSubmittedForm();
+
+            const res = await fetch(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/route`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(submittedForm),
+                }
+            );
+
+            if (!res.ok) {
+                notify("Failed to generate resume", "error");
+                return;
+            }
+
+            const blob = await res.blob();
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "resume.pdf";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            window.URL.revokeObjectURL(url);
+
+            notify("Successfully downloaded resume", "success");
+        } catch (error) {
+            console.error(error);
+            notify("Failed to generate resume", "error");
+        }
     };
 
     // -------------------------
@@ -384,8 +404,20 @@ export default function Build(){
         return true;
     };
 
-    const isCurrentStepValid = () =>
-        isFilled(steps[step].data);
+    const isCurrentStepValid = () => {
+        const key = steps[step].key;
+
+        if (key === "projects") {
+            return form.projects.every(item =>
+                isFilled({
+                    ...item,
+                    dateEnd: true,
+                })
+            );
+        }
+
+        return isFilled(steps[step].data);
+    };
 
     // -------------------------
     // Section changing
@@ -428,6 +460,7 @@ export default function Build(){
         const nextStep = step + 1;
 
         ensureSectionItem(nextStep);
+        notify(`Successfully added ${steps[step].title}`,"success")
         setStep(nextStep);
     };
 
@@ -461,6 +494,7 @@ export default function Build(){
         }
 
         ensureSectionItem(nextStep);
+        notify(`Skipped ${steps[step].title} (not added)`,"warning");
         setStep(nextStep);
     };
 

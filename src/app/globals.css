@@ -62,9 +62,7 @@ h3{
 
 h4 {
     display: flex;
-    flex-direction: row;
     justify-content: space-between;
-    align-items: center;
     font-size: 1.25rem;
     font-weight: 600;
 }
@@ -74,6 +72,11 @@ h4 span {
     font-weight: 400;
     font-size: 0.75em;
     text-align: right;
+    color: var(--muted);
+}
+
+i {
+    color: var(--muted);
 }
 
 label{
@@ -104,6 +107,31 @@ textarea:focus {
     outline: none;
 }
 
+/* Firefox */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: gray transparent;
+}
+
+/* Chrome, Edge, Safari */
+*::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+*::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+    background: gray;
+    border-radius: 999px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: gray;
+}
+
 form {
     display: flex;
     flex-direction: column;
@@ -128,4 +156,24 @@ form {
         corner-shape: squircle;
         border-radius: 48px;
     }
+}
+
+.pillow-hover-dark {    
+    transition:
+        background 300ms ease,
+        box-shadow 300ms ease;
+}
+
+.pillow-hover-dark:hover {
+    background: linear-gradient(
+        180deg,
+        #b8b8b8 0%,
+        #dedede 100%
+    );
+
+    box-shadow:
+        0 14px 22px rgba(0, 0, 0, 0.32),
+
+        inset 10px 10px 20px rgba(255, 255, 255, 0.8),
+        inset -10px -10px 20px rgba(0, 0, 0, 0.1);
 }

@@ -3,15 +3,32 @@
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import ConfirmationModal from "@/components/ConfirmationModal";
+import { useNotifications } from "@/components/NotificationProvider";
 
 export default function Home(){
 
     const router = useRouter();
     const [savedResume, setSavedResume] = useState<string | null>(null);
     const [showNewResumeConfirm, setShowNewResumeConfirm] = useState(false);
+    const { notify } = useNotifications();
 
     useEffect(() => {
-        setSavedResume(localStorage.getItem("resume-form"));
+        const saved = localStorage.getItem("resume-form");
+        let username = "";
+
+        if (saved) {
+            const resume = JSON.parse(saved);
+
+            if (resume.name?.trim()) {
+                username = resume.name
+            }
+        }
+
+        setSavedResume(saved);
+        
+        notify(`Welcome back ${username}`.trim());
+        
     }, []);
 
     const handleNewResume = () => {
@@ -79,72 +96,22 @@ export default function Home(){
             </div>
 
             {showNewResumeConfirm && (
-                <div 
-                    className="
-                        fixed
-                        inset-0
-                        z-50
-                        flex
-                        items-center
-                        justify-center
-                        bg-black/40
-                        p-4
-                    "
-                    onClick={() => setShowNewResumeConfirm(false)}
-                >
-                    <div 
-                        className="
-                            flex
-                            w-full
-                            max-w-sm
-                            flex-col
-                            gap-6
-                            bg-white
-                            p-8
-                            shadow-xl
-                            squircle
-                        "
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="flex flex-col gap-2">
-                            <h2>Start a new resume?</h2>
-
-                            <p className="text-sm text-gray-500">
+                <ConfirmationModal
+                    title="Start a new resume?"
+                    message={
+                        <>
+                            <p>
                                 You already have a saved resume.
-                                
                             </p>
-                            <p className="text-sm text-gray-500">
+                            <p>
                                 Starting a new one will delete it.
                             </p>
-                        </div>
-
-                        <div className="
-                            flex
-                            justify-between
-                            gap-3
-                        ">
-                            <Button
-                                text="Cancel"
-                                variant="tertiary"
-                                type="button"
-                                x={4}
-                                y={2}
-                                onClick={() =>
-                                    setShowNewResumeConfirm(false)
-                                }
-                            />
-
-                            <Button
-                                text="New Resume"
-                                type="button"
-                                variant="red"
-                                x={4}
-                                y={2}
-                                onClick={confirmNewResume}
-                            />
-                        </div>
-                    </div>
-                </div>
+                        </>
+                    }
+                    confirmText="New Resume"
+                    onConfirm={confirmNewResume}
+                    onCancel={() => setShowNewResumeConfirm(false)}
+                />
             )}
 
         </div>

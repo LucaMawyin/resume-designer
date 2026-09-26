@@ -57,9 +57,27 @@ export default function ResumeReview({
                     {form.links?.map((link, index) => (
                         <div key={index} className="flex flex-col gap-2">
                             <h4>{link.title}</h4>
-                            <p>{link.href}</p>
+
+                            <a
+                                href={
+                                    link.href.startsWith("http://") ||
+                                    link.href.startsWith("https://")
+                                        ? link.href
+                                        : `https://${link.href}`
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="
+                                    text-blue-400 
+                                    hover:text-blue-700
+                                    w-fit
+                                "
+                            >
+                                {link.href}
+                            </a>
                         </div>
-                    ))}                
+                    ))}
                 </div>
             )}
 
@@ -76,14 +94,24 @@ export default function ResumeReview({
                 >
                     <h3>Education</h3>
                     {form.education?.map((item, index) => (
-                        <div key={index} className="flex flex-col gap-2">
-                            <h4 className="flex flex-wrap gap-x-2">
+                        <div 
+                            key={index} 
+                            className="flex flex-col gap-2"
+                        >
+                            <h4 
+                                className="
+                                    flex 
+                                    flex-col 
+                                    sm:flex-row 
+                                    sm:flex-wrap 
+                                    gap-x-2
+                            ">
                                 {item.title}
                                 <span>
                                     {item.dateStart} - {item.dateEnd}
                                 </span>
                             </h4>
-                            <p>{item.subtitle}</p>
+                            <i>{item.subtitle}</i>
                             {item.content.split(/\r?\n/).map((line, i) => (
                                 <p key={i}>{line}</p>
                             ))}
@@ -105,14 +133,24 @@ export default function ResumeReview({
                 >
                     <h3>Experience</h3>
                     {form.experience?.map((item, index) => (
-                        <div key={index} className="flex flex-col gap-2">
-                            <h4 className="flex flex-wrap gap-x-2">
+                        <div 
+                            key={index} 
+                            className="flex flex-col gap-2"
+                        >
+                            <h4 
+                                className="
+                                    flex 
+                                    flex-col 
+                                    sm:flex-row 
+                                    sm:flex-wrap 
+                                    gap-x-2
+                            ">
                                 {item.title}
                                 <span>
                                     {item.dateStart} - {item.dateEnd}
                                 </span>
                             </h4>
-                            <p>{item.subtitle}</p>
+                            <i>{item.subtitle}</i>
                             {item.content.split(/\r?\n/).map((line, i) => (
                                 <p key={i}>{line}</p>
                             ))}
@@ -134,15 +172,46 @@ export default function ResumeReview({
                 >
                     <h3>Projects</h3>
                     {form.projects?.map((item, index) => (
-                        <div key={index} className="flex flex-col gap-2">
-                            <h4 className="flex flex-wrap gap-x-2">
+                        <div 
+                            key={index} 
+                            className="flex flex-col gap-2"
+                        >
+                            <h4 
+                                className="
+                                    flex 
+                                    flex-col 
+                                    sm:flex-row 
+                                    sm:flex-wrap 
+                                    gap-x-2
+                            ">
                                 {item.title}
                                 <span>
                                     {item.dateStart}
                                 </span>
                             </h4>
-                            <p>{item.subtitle}</p>
-                            {item.dateEnd.length > 0 && <p>{item.dateEnd}</p>}
+                            <i>{item.subtitle}</i>
+                            {item.dateEnd.length > 0 && (
+                                <a
+                                    href={
+                                        item.dateEnd.startsWith("http://") ||
+                                        item.dateEnd.startsWith("https://")
+                                            ? item.dateEnd
+                                            : `https://${item.dateEnd}`
+                                    }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="
+                                        text-blue-400 
+                                        hover:text-blue-700 
+                                        w-fit
+
+                                    "
+                                >
+                                    {item.dateEnd}
+                                </a>
+
+                            )}
                             {item.content.split(/\r?\n/).map((line, i) => (
                                 <p key={i}>{line}</p>
                             ))}
