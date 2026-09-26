@@ -53,6 +53,7 @@ export default function Home(){
                         <a 
                             className="hover:text-gray-800"
                             href="https://lucamawyin.com"
+                            target="__blank"
                         >   
                             Luca Mawyin
                         </a>                            
