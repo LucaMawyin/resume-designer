@@ -431,6 +431,24 @@ export default function Build(){
         setStep(nextStep);
     };
 
+    const handleReview = () => {
+        if (!isCurrentStepValid()) {
+            notify("Please fill in all fields", "error");
+            return;
+        }
+
+        const key = steps[step].key;
+
+        if (key) {
+            setSkippedSections(prev => ({
+                ...prev,
+                [key]: false,
+            }));
+        }
+
+        setStep(steps.length - 1);
+    };
+
     const handleSkip = () => {
         const key = steps[step].key;
         const nextStep = step + 1;
@@ -604,7 +622,10 @@ export default function Build(){
             title: "Review",
             key: null,
             component: (
-                <ResumeReview form={getSubmittedForm()}/>
+                <ResumeReview
+                    form={getSubmittedForm()}
+                    onEdit={setStep}
+                />
             ),
         },
     ];
@@ -668,6 +689,17 @@ export default function Build(){
                     justify-between
                     px-8
                 ">
+                    {step !== steps.length - 1 && (
+                        <Button
+                            text="Review"
+                            variant="secondary"
+                            type="button"
+                            className="block md:hidden w-full"
+                            x={8}
+                            y={2}
+                            onClick={handleReview}
+                        />
+                    )}
                     <Button
                         text="Back"
                         variant="tertiary"
@@ -678,6 +710,18 @@ export default function Build(){
                         onClick={handleBack}
                         className={`${step !== steps.length - 1 ? "w-fit" : "w-full"} sm:w-fit`}
                     />
+                    {step !== steps.length - 1 && (
+                        <Button
+                            text="Review"
+                            variant="secondary"
+                            type="button"
+                            className="hidden md:block"
+                            x={8}
+                            y={2}
+                            onClick={handleReview}
+                        />
+                    )}
+
 
                     {step === steps.length - 1 ? (
                         <Button
@@ -690,17 +734,23 @@ export default function Build(){
                             className="w-full sm:w-fit"
                         />
                     ) : (
-                        <Button
-                            text="Next"
-                            type="button"
-                            x={8}
-                            y={2}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                handleNext();
-                            }}
-                        />
-                    )}                
+                        <div className="flex gap-4">
+
+
+                            <Button
+                                text="Next"
+                                type="button"
+                                x={8}
+                                y={2}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleNext();
+                                }}
+                            />
+                        </div>
+
+                    )}    
+            
                 </div>
             </div>
 

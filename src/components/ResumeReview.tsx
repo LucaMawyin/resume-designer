@@ -4,10 +4,12 @@ import { FormState } from "@/lib/types";
 
 type ResumeReviewProps = {
     form: Partial<FormState>;
+    onEdit: (step: number) => void;
 };
 
 export default function ResumeReview({
     form,
+    onEdit
 }: ResumeReviewProps) {
     return (
         <div className="
@@ -24,7 +26,16 @@ export default function ResumeReview({
             [&_h3]:mb-2
             [&_h4]:mt-2
         ">
-            <div>
+            <div 
+                className="
+                    cursor-pointer
+                    rounded-xl
+                    p-2
+                    transition
+                    hover:bg-black/5
+                "
+                onClick={() => onEdit(0)}
+            >
                 <h3>Personal Information</h3>
                 <h4>{form.name}</h4>
                 <p>{form.email}</p>
@@ -32,7 +43,16 @@ export default function ResumeReview({
             </div>
 
             {form.links && form.links.length > 0 && (
-                <div>
+                <div 
+                    className="
+                        cursor-pointer
+                        rounded-xl
+                        p-2
+                        transition
+                        hover:bg-black/5
+                    "
+                    onClick={() => onEdit(1)}
+                >
                     <h3>Links</h3>
                     {form.links?.map((link, index) => (
                         <div key={index} className="flex flex-col gap-2">
@@ -44,7 +64,16 @@ export default function ResumeReview({
             )}
 
             {form.education && form.education.length > 0 && (
-                <div>
+                <div 
+                    className="
+                        cursor-pointer
+                        rounded-xl
+                        p-2
+                        transition
+                        hover:bg-black/5
+                    "
+                    onClick={() => onEdit(2)}
+                >
                     <h3>Education</h3>
                     {form.education?.map((item, index) => (
                         <div key={index} className="flex flex-col gap-2">
@@ -64,7 +93,16 @@ export default function ResumeReview({
             )}
 
             {form.experience && form.experience.length > 0 && (
-                <div>
+                <div 
+                    className="
+                        cursor-pointer
+                        rounded-xl
+                        p-2
+                        transition
+                        hover:bg-black/5
+                    "
+                    onClick={() => onEdit(3)}
+                >
                     <h3>Experience</h3>
                     {form.experience?.map((item, index) => (
                         <div key={index} className="flex flex-col gap-2">
@@ -84,7 +122,16 @@ export default function ResumeReview({
             )}
 
             {form.projects && form.projects.length > 0 && (
-                <div>
+                <div 
+                    className="
+                        cursor-pointer
+                        rounded-xl
+                        p-2
+                        transition
+                        hover:bg-black/5
+                    "
+                    onClick={() => onEdit(4)}
+                >
                     <h3>Projects</h3>
                     {form.projects?.map((item, index) => (
                         <div key={index} className="flex flex-col gap-2">
@@ -105,7 +152,16 @@ export default function ResumeReview({
             )}
 
             {form.skills && form.skills.length > 0 && (
-                <div>
+                <div 
+                    className="
+                        cursor-pointer
+                        rounded-xl
+                        p-2
+                        transition
+                        hover:bg-black/5
+                    "
+                    onClick={() => onEdit(5)}
+                >
                     <h3>Technical Skills</h3>
                     {form.skills?.map((skill, index) => (
                         <div key={index} className="flex flex-col gap-2">
