@@ -16,6 +16,12 @@ cd .\python\
 flask --app api run --debug
 '''
 
+def non_empty_items(items):
+    return [
+        item for item in items
+        if any(item.values())
+    ]
+
 @app.route('/api/route', methods=['POST'])
 def generate():
     form = request.get_json() or {}
@@ -62,8 +68,7 @@ def create_pdf(form, output_file:str):
     email = form.get("email","")
 
     doc = create_document(name)
-    
-    links = form.get("links",[])
+    links = non_empty_items(form.get("links", []))
     links_latex = " $|$ ".join(
         rf"\href{{{normalize_link(link['href'])}}}{{{link['title']}}}"
         for link in links if link.get("href") and link.get("title")
@@ -81,7 +86,7 @@ def create_pdf(form, output_file:str):
     # --------------------
     # EDUCATION
     # --------------------
-    education = form.get("education", [])
+    education = non_empty_items(form.get("education", []))
     if education:
         doc.append(NoEscape(r"\ressection{Education}"))
 
@@ -110,7 +115,7 @@ def create_pdf(form, output_file:str):
     # --------------------
     # EXPERIENCE
     # --------------------
-    experience = form.get("experience", [])
+    experience = non_empty_items(form.get("experience", []))
     if experience:
         doc.append(NoEscape(r"\ressection{Experience}"))
 
@@ -139,7 +144,7 @@ def create_pdf(form, output_file:str):
     # --------------------
     # PROJECTS
     # --------------------
-    projects = form.get("projects", [])
+    projects = non_empty_items(form.get("projects", []))
     if projects:
         doc.append(NoEscape(r"\ressection{Projects}"))
         for i, item in enumerate(projects):
@@ -185,7 +190,7 @@ def create_pdf(form, output_file:str):
     # --------------------
     # TECHNICAL SKILLS
     # --------------------
-    skills = form.get("skills",[])
+    skills = non_empty_items(form.get("skills", []))
     if skills:
         doc.append(NoEscape(rf"""
         \begin{{tabularx}}{{\textwidth}}{{X}}
@@ -345,4 +350,4 @@ def normalize_month_year(value: str) -> str:
     return value
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=False, use_reloader=False)
+    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)

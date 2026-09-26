@@ -16,14 +16,15 @@ export default function Footer() {
                 py-6
                 text-sm
                 sm:flex-row
+                text-gray-500
             ">
                 <p>
-                    &copy; {new Date().getFullYear()} Resume Designer by{" "}
+                    &copy; {new Date().getFullYear()} Resumely by{" "}
                     <a
                         href="https://lucamawyin.com"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-blue-400"
+                        className="hover:text-gray-800"
                     >
                         Luca Mawyin
                     </a>
@@ -34,7 +35,7 @@ export default function Footer() {
                         href="https://github.com/LucaMawyin/resume-designer"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-blue-400"
+                        className="hover:text-gray-800"
                     >
                         GitHub
                     </a>
@@ -43,7 +44,7 @@ export default function Footer() {
                         href="https://lucamawyin.com"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-blue-400"
+                        className="hover:text-gray-800"
                     >
                         Luca Mawyin
                     </a>

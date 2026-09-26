@@ -3,13 +3,16 @@
 export default function Button(props : {
     text : string; 
     type?: "button" | "submit" | "reset";
-    variant?: "primary" | "secondary" | "red" | "transparent";
+    variant?: "primary" | "secondary" | "tertiary" | "red" | "transparent";
     children?:React.ReactNode;
     className?:string;
     onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
     disabled?: boolean;
     name?:string;
     value?:string;
+    form?: string;
+    x:number;
+    y:number;
 }){
 
     // Handle click event
@@ -18,33 +21,49 @@ export default function Button(props : {
     }
 
     // Base button style
-    const base = "min-h-14 py-4 px-8 rounded-lg transition duration-(--transition-duration) cursor-pointer";
+    const base = `
+        h-fit 
+        rounded-lg 
+        whitespace-nowrap
+        transition 
+        duration-(--transition-duration) 
+        cursor-pointer
+    `;
 
     // Variant styles
     const styles = {
         primary:
-            "bg-(--contrast-light) text-white hover:bg-(--contrast-colour) hover:shadow-xl",
-        secondary:
-            "bg-gray-200 text-black hover:bg-gray-300 hover:shadow-md",
+            `bg-(--primary-colour) text-white ${props.disabled ? "" : "hover:bg-(--primary-dark) hover:shadow-xl"}`,
+        secondary: 
+            `bg-blue-400 text-white ${props.disabled ? "" : "hover:bg-blue-600 hover:shadow-md"}`,
+        tertiary:
+            `bg-gray-200 text-black ${props.disabled ? "" : "hover:bg-gray-300 hover:shadow-md"}`,
         red : 
-            "bg-red-600 text-white hover:bg-red-700 hover:shadow-md",
+            `bg-red-600 text-white ${props.disabled ? "" : "hover:bg-red-700 hover:shadow-md"}`,
         transparent:
             "bg-transparent text-black",
     };
 
     // Add disabled styles if the button is disabled
     const disabledStyle = props.disabled
-        ? "opacity-50 hover:bg-red-600! cursor-default!"
+        ? "opacity-50 cursor-default!"
         : "";
 
     return(
         <button 
+            style={{
+                paddingTop: `${props.y * 0.25}rem`,
+                paddingBottom: `${props.y * 0.25}rem`,
+                paddingLeft: `${props.x * 0.25}rem`,
+                paddingRight: `${props.x * 0.25}rem`,
+            }}
             type={props.type ?? "button"}
             onClick={clickEvent} 
             disabled={props.disabled}
             className={`${base} ${styles[props.variant ?? "primary"]} ${props.className ?? ""} ${disabledStyle}`}
             name={props.name}
             value={props.value}
+            form={props.form}
         >
                 
             {props.text}
