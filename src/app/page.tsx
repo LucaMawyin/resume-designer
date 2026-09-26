@@ -15,20 +15,16 @@ export default function Home(){
 
     useEffect(() => {
         const saved = localStorage.getItem("resume-form");
-        let username = "";
 
         if (saved) {
             const resume = JSON.parse(saved);
 
             if (resume.name?.trim()) {
-                username = resume.name
+                notify(`Welcome back ${resume.name}`.trim());
             }
         }
 
         setSavedResume(saved);
-        
-        notify(`Welcome back ${username}`.trim());
-        
     }, []);
 
     const handleNewResume = () => {
