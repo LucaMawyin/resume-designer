@@ -2,7 +2,7 @@
 
 import Button from "@/components/Button";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ConfirmationModal from "@/components/ConfirmationModal";
 import { useNotifications } from "@/components/NotificationProvider";
 
@@ -13,13 +13,16 @@ export default function Home(){
     const [showNewResumeConfirm, setShowNewResumeConfirm] = useState(false);
     const { notify } = useNotifications();
 
+    const welcomeShown = useRef(false);
+
     useEffect(() => {
         const saved = localStorage.getItem("resume-form");
 
         if (saved) {
             const resume = JSON.parse(saved);
 
-            if (resume.name?.trim()) {
+            if (resume.name?.trim() && !welcomeShown.current) {
+                welcomeShown.current = true;
                 notify(`Welcome back ${resume.name}`.trim());
             }
         }
@@ -32,12 +35,14 @@ export default function Home(){
             setShowNewResumeConfirm(true);
             return;
         }
-
+        
+        notify("New resume started");
         router.push("/build");
     };
 
     const confirmNewResume = () => {
         localStorage.removeItem("resume-form");
+        notify("New resume started");
         router.push("/build");
     };
 
@@ -99,9 +104,9 @@ export default function Home(){
                             <p>
                                 You already have a saved resume.
                             </p>
-                            <p>
+                            <strong>
                                 Starting a new one will delete it.
-                            </p>
+                            </strong>
                         </>
                     }
                     confirmText="New Resume"

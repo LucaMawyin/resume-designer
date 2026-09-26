@@ -1,9 +1,8 @@
 import Footer from "@/components/Footer";
 import "../globals.css";
-import Header from "@/components/Header";
 import { Inter } from "next/font/google";
 import { NotificationProvider } from "@/components/NotificationProvider";
-import { Suspense } from "react";
+import BuildShell from "@/components/BuildShell";
 
 const inter = Inter({
     subsets: ["latin"],
@@ -15,23 +14,15 @@ export default function BuildLayout({
     children: React.ReactNode;
 }>) {
     return (
-
         <div className={`
-            ${inter.className} 
-            flex 
-            flex-col 
-            w-full 
+            ${inter.className}
+            flex
+            flex-col
+            w-full
         `}>
-            <Header/>
-            <div className="
-                relative 
-                flex
-                flex-1
-            ">
+            <BuildShell>
                 {children}
-            </div>
+            </BuildShell>
         </div>
-        
-
     );
 }

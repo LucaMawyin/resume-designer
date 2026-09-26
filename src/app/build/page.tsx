@@ -14,7 +14,7 @@ import {
     FormState,
     SectionKey,
 } from "@/lib/types";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
 const emptySectionItem: {
@@ -106,6 +106,7 @@ export default function Build(){
     const formRef = useRef<HTMLFormElement>(null);
     const { notify } = useNotifications();
     const searchParams = useSearchParams();
+    const router = useRouter();
 
     const [ step, setStep ] = useState(0);
     const [form, setForm] = useState<FormState>(initialForm);
@@ -199,6 +200,22 @@ export default function Build(){
         }
         
     }, [loaded, searchParams, form.name, form.email, form.number]);
+
+    const [showStepTitle, setShowStepTitle] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowStepTitle(window.scrollY >= window.innerHeight * 0.1);
+        };
+
+        handleScroll();
+
+        window.addEventListener("scroll", handleScroll, { passive: true });
+
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        };
+    }, []);
 
     // -------------------------
     // Personal Information
@@ -404,10 +421,11 @@ export default function Build(){
         return true;
     };
 
-    const isCurrentStepValid = () => {
-        const key = steps[step].key;
+    const isStepValid = (stepIndex: number) => {
+        const currentStep = steps[stepIndex];
+        if (!currentStep) return false;
 
-        if (key === "projects") {
+        if (currentStep.key === "projects") {
             return form.projects.every(item =>
                 isFilled({
                     ...item,
@@ -416,7 +434,50 @@ export default function Build(){
             );
         }
 
-        return isFilled(steps[step].data);
+        return isFilled(currentStep.data);
+    };
+
+    const canNavigateToStep = (targetStep: number) => {
+        // Going backward is always allowed
+        if (targetStep <= step) {
+            return true;
+        }
+
+        // Every step between the current step and target must be valid
+        for (let i = step; i < targetStep; i++) {
+            const key = steps[i].key;
+
+            // Review doesn't need validation
+            if (!key && i === steps.length - 1) {
+                continue;
+            }
+
+            if (!isStepValid(i)) {
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    const isCurrentStepValid = () => {
+        return isStepValid(step);
+    };
+
+    const getNavigationBlocker = (targetStep: number) => {
+        // Going backward is always allowed
+        if (targetStep <= step) {
+            return null;
+        }
+
+        // Find the first incomplete step between current and target
+        for (let i = step; i < targetStep; i++) {
+            if (!isStepValid(i)) {
+                return i;
+            }
+        }
+
+        return null;
     };
 
     // -------------------------
@@ -499,6 +560,11 @@ export default function Build(){
     };
 
     const handleBack = () => {
+        if (step === 0) {
+            router.push("/");
+            return;
+        }
+
         const previousStep = step - 1;
 
         ensureSectionItem(previousStep);
@@ -665,131 +731,266 @@ export default function Build(){
     ];
 
     return (
-        <div className="
-            flex 
-            w-full
-            items-center
-            justify-center
-        ">
-            <div className="
-                flex
-                w-full
-                max-w-xl
-                flex-col
-                m-4
-                sm:m-8
-            ">
-                <form
-                    id="resume-form"
-                    ref={formRef}
-                    onSubmit={handleSubmit}
-                    className="
-                        flex
-                        flex-col
-                        p-8
-                        squircle
-                        pillow
-                        shadow-[0_0_20px_rgba(0,0,0,0.1)]
-                        bg-white
-                    "
+        <>
+            <div className={`
+                sticky 
+                top-[10dvh] 
+                z-50 
+                w-full 
+                bg-(--bg) 
+                px-4 
+                pb-3
+                border-gray-300 
+                border-b
+                transition-opacity
+                duration-(--transition-duration)
+                ${showStepTitle ? "opacity-100" : "border-transparent pt-3"}
+            `}>
+                <div
+                    className={`
+                        mx-auto
+                        w-full
+                        max-w-2xl
+                        text-center
+                        text-sm
+                        font-semibold
+                        text-gray-600
+                        overflow-hidden
+                        transition-all
+                        duration-(--transition-duration)
+                        ease-in-out
+                        ${
+                            showStepTitle
+                                ? "mb-3 max-h-8 opacity-100"
+                                : "mb-0 max-h-0 opacity-0"
+                        }
+                    `}
                 >
-                    <div className="
-                        flex
-                        flex-row
-                        justify-between
-                    ">
-                        <h2 className="w-fit">{steps[step].title}</h2>
-                        {steps[step].key && (
-                            <Button
-                                text="skip"
-                                variant="transparent"
-                                x={0}
-                                y={0}
-                                className="text-gray-400 hover:text-gray-500 pt-4!"
-                                onClick={handleSkip}
-                            />                        
-                        )}
+                    {steps[step].title}
+                </div>
 
-                    </div>
-                    {steps[step].component}
-
-            
-                </form>
-
-                <div className="
+                <div className={`
+                    relative 
+                    mx-auto
                     flex 
-                    flex-wrap-reverse
-                    gap-4
+                    w-full 
+                    max-w-2xl 
+                    items-center 
                     justify-between
-                    px-8
-                ">
-                    {step !== steps.length - 1 && (
-                        <Button
-                            text="Review"
-                            variant="secondary"
-                            type="button"
-                            className="block md:hidden w-full"
-                            x={8}
-                            y={2}
-                            onClick={handleReview}
+                `}>
+                    
+                    {/* Progress line */}
+                    <div className="
+                        absolute 
+                        left-0 
+                        right-0 
+                        top-1/2
+                        h-1 
+                        -translate-y-1/2 
+                        bg-gray-300
+                    ">
+                        <div
+                            className="
+                                h-full 
+                                bg-green-500 
+                                transition-[width] 
+                                duration-300 
+                                ease-in-out
+                            "
+                            style={{
+                                width: `${(step / (steps.length - 1)) * 100}%`,
+                            }}
                         />
-                    )}
-                    <Button
-                        text="Back"
-                        variant="tertiary"
-                        type="button"
-                        x={8}
-                        y={2}
-                        disabled={step===0}
-                        onClick={handleBack}
-                        className={`${step !== steps.length - 1 ? "w-fit" : "w-full"} sm:w-fit`}
-                    />
-                    {step !== steps.length - 1 && (
-                        <Button
-                            text="Review"
-                            variant="secondary"
-                            type="button"
-                            className="hidden md:block"
-                            x={8}
-                            y={2}
-                            onClick={handleReview}
-                        />
-                    )}
+                    </div>
 
+                    {/* Step bubbles */}
+                    {steps.map((item, index) => {
 
-                    {step === steps.length - 1 ? (
-                        <Button
-                            text="Download Resume"
-                            variant="primary"
-                            type="submit"
-                            form="resume-form"
-                            x={8}
-                            y={2}
-                            className="w-full sm:w-fit"
-                        />
-                    ) : (
-                        <div className="flex gap-4">
+                        const blocker = getNavigationBlocker(index);
+                        const canNavigate = blocker === null;
 
-
-                            <Button
-                                text="Next"
+                        return (
+                            <button
+                                key={index}
                                 type="button"
-                                x={8}
-                                y={2}
-                                onClick={(e) => {
-                                    e.preventDefault();
-                                    handleNext();
-                                }}
-                            />
-                        </div>
+                                onClick={() => {
+                                    if (blocker !== null) {
+                                        // Only notify if the current step is the blocker
+                                        if (blocker === step) {
+                                            notify("Please fill in all fields", "error");
+                                        }
+                                        else {
+                                            notify("You have not completed each step yet", "error");
+                                        }
 
-                    )}    
-            
+                                        return;
+                                    }
+
+                                    setStep(index);
+                                }}
+                                className={`
+                                    relative
+                                    z-10
+                                    flex
+                                    h-8
+                                    w-8
+                                    items-center
+                                    justify-center
+                                    rounded-full
+                                    text-sm
+                                    font-semibold
+                                    transition-all
+                                    duration-300
+                                    ${
+                                        index <= step
+                                            ? "bg-green-500 text-white"
+                                            : "bg-gray-300 text-gray-600"
+                                    }
+                                    ${
+                                        canNavigate
+                                            ? "cursor-pointer hover:scale-110"
+                                            : "cursor-not-allowed opacity-60"
+                                    }
+                                `}
+                                title={item.title}
+                            >
+                                {index + 1}
+                            </button>
+                        );
+                    })}
+
                 </div>
             </div>
 
+            <div className="
+                flex 
+                flex-1
+                w-full
+                items-center
+                justify-center
+            ">
+                <div className="
+                    flex
+                    w-full
+                    max-w-2xl
+                    flex-col
+                    mb-8
+                    mx-4
+                    sm:mb-8
+                    gap-8
+                ">
+                    <form
+                        id="resume-form"
+                        ref={formRef}
+                        onSubmit={handleSubmit}
+                        className="
+                            flex
+                            flex-col
+                            p-8
+                            squircle
+                            pillow
+                            shadow-[0_0_20px_rgba(0,0,0,0.1)]
+                            bg-white
+                        "
+                    >
+                        <div className="
+                            flex
+                            flex-row
+                            justify-between
+                        ">
+                            <h2 className="w-fit">{steps[step].title}</h2>
+                            {steps[step].key && (
+                                <Button
+                                    text="skip"
+                                    variant="transparent"
+                                    x={0}
+                                    y={0}
+                                    className="text-gray-400 hover:text-gray-500 pt-4!"
+                                    onClick={handleSkip}
+                                />                        
+                            )}
 
-        </div>
+                        </div>
+                        {steps[step].component}
+
+                
+                    </form>
+
+                    <div className="
+                        flex 
+                        flex-wrap-reverse
+                        gap-4
+                        justify-between
+                        px-8
+                    ">
+                        {step !== steps.length - 1 && (
+                            <Button
+                                text="Review"
+                                variant="secondary"
+                                type="button"
+                                className="block md:hidden w-full"
+                                x={8}
+                                y={2}
+                                onClick={handleReview}
+                            />
+                        )}
+                        <Button
+                            text={step === 0 ? "Home" : "Back"}
+                            variant="tertiary"
+                            type="button"
+                            x={8}
+                            y={2}
+                            onClick={handleBack}
+                            className={`${step !== steps.length - 1 ? "w-fit" : "w-full"} sm:w-fit`}
+                        />
+                        {step !== steps.length - 1 && (
+                            <Button
+                                text="Review"
+                                variant="secondary"
+                                type="button"
+                                className="hidden md:block"
+                                x={8}
+                                y={2}
+                                onClick={handleReview}
+                            />
+                        )}
+
+
+                        {step === steps.length - 1 ? (
+                            <Button
+                                text="Download Resume"
+                                variant="primary"
+                                type="submit"
+                                form="resume-form"
+                                x={8}
+                                y={2}
+                                className="w-full sm:w-fit"
+                            />
+                        ) : (
+                            <div className="flex gap-4">
+
+
+                                <Button
+                                    text="Next"
+                                    type="button"
+                                    x={8}
+                                    y={2}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleNext();
+                                    }}
+                                />
+                            </div>
+
+                        )}    
+                
+                    </div>
+                </div>
+
+
+            </div>        
+        </>
+
     );
 
 }
