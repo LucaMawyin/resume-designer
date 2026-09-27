@@ -141,7 +141,7 @@ export default function Home(){
                     <p className="text-sm text-gray-400 mt-6">
                         <a 
                             className="hover:text-gray-800"
-                            href="https://github.com/LucaMawyin/resume-designer"
+                            href="https://github.com/LucaMawyin/resumely"
                             target="__blank"
                             rel="noopener noreferrer"
                         >   
