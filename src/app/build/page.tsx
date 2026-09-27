@@ -53,17 +53,19 @@ const emptySectionItem: {
     },
 };
 
-const emptyCustomSection: CustomSection = {
-    title: "",
-    items: [],
-};
-
 const emptyCustomItem: ResumeItemData = {
     title: "",
     subtitle: "",
     dateStart: "",
     dateEnd: "",
     content: "",
+};
+
+const emptyCustomSection: CustomSection = {
+    title: "",
+    items: [
+        { ...emptyCustomItem },
+    ],
 };
 
 const initialForm: FormState = {
@@ -441,10 +443,7 @@ export default function Build(){
             ...prev,
             custom: [
                 ...prev.custom,
-                {
-                    ...emptyCustomSection,
-                    items: [],
-                },
+                { ...emptyCustomSection },
             ],
         }));
     };
@@ -705,6 +704,58 @@ export default function Build(){
     // Section changing
     // -------------------------
 
+    const ensureCustomSection = () => {
+        setForm(prev => {
+            if (prev.custom.length === 0) {
+                return {
+                    ...prev,
+                    custom: [
+                        {
+                            ...emptyCustomSection,
+                            items: [{ ...emptyCustomItem }],
+                        },
+                    ],
+                };
+            }
+
+            const custom = [...prev.custom];
+
+            custom[0] = {
+                ...custom[0],
+                items:
+                    custom[0].items.length > 0
+                        ? custom[0].items
+                        : [{ ...emptyCustomItem }],
+            };
+
+            return {
+                ...prev,
+                custom,
+            };
+        });
+    };
+
+    const navigateToStep = (targetStep: number) => {
+        const target = steps[targetStep];
+
+        if (!target) {
+            return;
+        }
+
+        if (target.title === "Custom Sections") {
+            ensureCustomSection();
+        } else if (target.key) {
+            ensureSectionItem(targetStep);
+        }
+
+        setStep(targetStep);
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    };
+
     const ensureSectionItem = (stepIndex: number) => {
         const key = steps[stepIndex]?.key;
 
@@ -856,19 +907,12 @@ export default function Build(){
 
         const nextStep = step + 1;
 
-        ensureSectionItem(nextStep);
-
         notify(
             `Successfully added ${steps[step].title}`,
             "success"
         );
 
-        setStep(nextStep);
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-        });
+        navigateToStep(nextStep);
 
         if (steps[step].title === "Custom Sections") {
             setSkippedCustom(false);
@@ -944,13 +988,12 @@ export default function Build(){
             }));
         }
 
-        ensureSectionItem(nextStep);
-        notify(`Skipped ${steps[step].title} (not added)`,"warning");
-        setStep(nextStep);
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-        });
+        notify(
+            `Skipped ${steps[step].title} (not added)`,
+            "warning"
+        );
+
+        navigateToStep(nextStep);
 
         if (steps[step].title === "Custom Sections") {
             setSkippedCustom(true);
@@ -966,11 +1009,7 @@ export default function Build(){
         const previousStep = step - 1;
 
         ensureSectionItem(previousStep);
-        setStep(previousStep);
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth",
-        });
+        navigateToStep(previousStep);
     };
 
     const steps: {
@@ -1246,11 +1285,7 @@ export default function Build(){
                                         return;
                                     }
 
-                                    setStep(index);
-                                    window.scrollTo({
-                                        top: 0,
-                                        behavior: "smooth",
-                                    });
+                                    navigateToStep(index);
                                 }}
                                 className={`
                                     relative
