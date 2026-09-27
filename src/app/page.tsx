@@ -133,9 +133,20 @@ export default function Home(){
                             className="hover:text-gray-800"
                             href="https://lucamawyin.com"
                             target="__blank"
+                            rel="noopener noreferrer"
                         >   
                             Luca Mawyin
                         </a>                            
+                    </p>
+                    <p className="text-sm text-gray-400 mt-6">
+                        <a 
+                            className="hover:text-gray-800"
+                            href="https://github.com/LucaMawyin/resume-designer"
+                            target="__blank"
+                            rel="noopener noreferrer"
+                        >   
+                            Source Code
+                        </a>       
                     </p>
                 
                 </div>
