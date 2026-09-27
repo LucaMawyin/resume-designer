@@ -142,7 +142,7 @@ export default function Home(){
 
                 {savedResume && savedResume.length > 0 && (
                     <Button
-                        text="Load Resume"
+                        text="Continue Resume"
                         onClick={() => {router.push("/build?saved=true")}}
                         x={0}
                         y={2}
@@ -150,7 +150,7 @@ export default function Home(){
                 )}
                 <Button
                     text="New Resume"
-                    className="bg-blue-400 hover:bg-blue-600"
+                    variant="secondary"
                     x={0}
                     y={2}
                     onClick={handleNewResume}
@@ -158,6 +158,7 @@ export default function Home(){
 
                 <Button
                     text="Upload Source File"
+                    variant="secondary"
                     x={0}
                     y={2}
                     onClick={() => setShowUploadJson(true)}

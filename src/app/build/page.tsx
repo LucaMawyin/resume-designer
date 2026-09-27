@@ -130,6 +130,17 @@ export default function Build(){
         );
     };
 
+    const ensureSectionItems = <K extends SectionKey>(
+        section: K,
+        items: FormState[K]
+    ): FormState[K] => {
+        if (items.length > 0) {
+            return items;
+        }
+
+        return [{ ...emptySectionItem[section] }] as FormState[K];
+    };
+
     useEffect(() => {
         const saved = localStorage.getItem("resume-form");
 
@@ -139,30 +150,45 @@ export default function Build(){
             const isSavedResume =
                 searchParams.get("saved") === "true";
 
-            const loadedForm: FormState = {
-                ...initialForm,
-                ...parsed,
+                const loadedForm: FormState = {
+                    ...initialForm,
+                    ...parsed,
 
-                links: isSavedResume
-                    ? (parsed.links ?? []).filter(isItemFilled)
-                    : parsed.links ?? initialForm.links,
+                    links: ensureSectionItems(
+                        "links",
+                        isSavedResume
+                            ? (parsed.links ?? []).filter(isItemFilled)
+                            : parsed.links ?? initialForm.links
+                    ),
 
-                education: isSavedResume
-                    ? (parsed.education ?? []).filter(isItemFilled)
-                    : parsed.education ?? initialForm.education,
+                    education: ensureSectionItems(
+                        "education",
+                        isSavedResume
+                            ? (parsed.education ?? []).filter(isItemFilled)
+                            : parsed.education ?? initialForm.education
+                    ),
 
-                experience: isSavedResume
-                    ? (parsed.experience ?? []).filter(isItemFilled)
-                    : parsed.experience ?? initialForm.experience,
+                    experience: ensureSectionItems(
+                        "experience",
+                        isSavedResume
+                            ? (parsed.experience ?? []).filter(isItemFilled)
+                            : parsed.experience ?? initialForm.experience
+                    ),
 
-                projects: isSavedResume
-                    ? (parsed.projects ?? []).filter(isItemFilled)
-                    : parsed.projects ?? initialForm.projects,
+                    projects: ensureSectionItems(
+                        "projects",
+                        isSavedResume
+                            ? (parsed.projects ?? []).filter(isItemFilled)
+                            : parsed.projects ?? initialForm.projects
+                    ),
 
-                skills: isSavedResume
-                    ? (parsed.skills ?? []).filter(isItemFilled)
-                    : parsed.skills ?? initialForm.skills,
-            };
+                    skills: ensureSectionItems(
+                        "skills",
+                        isSavedResume
+                            ? (parsed.skills ?? []).filter(isItemFilled)
+                            : parsed.skills ?? initialForm.skills
+                    ),
+                };
 
             setForm(loadedForm);
         }
@@ -401,9 +427,24 @@ export default function Build(){
         }
     };
 
+    const getSourceForm = (): FormState => {
+        return {
+            name: form.name,
+            email: form.email,
+            number: form.number,
+
+            links: form.links.filter(isItemFilled),
+            education: form.education.filter(isItemFilled),
+            experience: form.experience.filter(isItemFilled),
+            projects: form.projects.filter(isItemFilled),
+            skills: form.skills.filter(isItemFilled),
+        };
+    };
+
     const handleDownloadSource = () => {
         try {
-            const json = JSON.stringify(form, null, 4);
+            const sourceForm = getSourceForm();
+            const json = JSON.stringify(sourceForm, null, 4);
 
             const blob = new Blob([json], {
                 type: "application/json",
@@ -980,7 +1021,10 @@ export default function Build(){
                                         className="block md:hidden w-full"
                                         x={8}
                                         y={2}
-                                        onClick={handleReview}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleReview();
+                                        }}
                                     />
 
                                     <Button
@@ -1000,7 +1044,10 @@ export default function Build(){
                                         className="hidden md:block"
                                         x={8}
                                         y={2}
-                                        onClick={handleReview}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleReview();
+                                        }}
                                     />
 
                                     <Button
