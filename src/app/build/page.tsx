@@ -401,6 +401,33 @@ export default function Build(){
         }
     };
 
+    const handleDownloadSource = () => {
+        try {
+            const json = JSON.stringify(form, null, 4);
+
+            const blob = new Blob([json], {
+                type: "application/json",
+            });
+
+            const url = window.URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "resume.json";
+
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+
+            window.URL.revokeObjectURL(url);
+
+            notify("Successfully downloaded source file", "success");
+        } catch (error) {
+            console.error(error);
+            notify("Failed to download source file", "error");
+        }
+    };
+
     // -------------------------
     // Check form completion
     // -------------------------
@@ -936,75 +963,93 @@ export default function Build(){
                 
                     </form>
 
-                    <div className="
-                        flex 
-                        flex-wrap-reverse
-                        gap-4
-                        justify-between
-                        px-8
-                    ">
-                        {step !== steps.length - 1 && (
-                            <Button
-                                text="Review"
-                                variant="secondary"
-                                type="button"
-                                className="block md:hidden w-full"
-                                x={8}
-                                y={2}
-                                onClick={handleReview}
-                            />
-                        )}
-                        <Button
-                            text={step === 0 ? "Home" : step === steps.length - 1 ? "I'm Not Done Yet" : "Back"}
-                            variant="tertiary"
-                            type="button"
-                            x={8}
-                            y={2}
-                            onClick={handleBack}
-                            className={`${step !== steps.length - 1 ? "w-fit" : "w-full"} sm:w-fit`}
-                        />
-                        {step !== steps.length - 1 && (
-                            <Button
-                                text="Review"
-                                variant="secondary"
-                                type="button"
-                                className="hidden md:block"
-                                x={8}
-                                y={2}
-                                onClick={handleReview}
-                            />
-                        )}
+                        <div className="
+                            flex 
+                            flex-wrap-reverse
+                            gap-4
+                            justify-between
+                            px-8
+                        ">
+
+                            {step !== steps.length - 1 ? (
+                                <>
+                                    <Button
+                                        text="Review"
+                                        variant="secondary"
+                                        type="button"
+                                        className="block md:hidden w-full"
+                                        x={8}
+                                        y={2}
+                                        onClick={handleReview}
+                                    />
+
+                                    <Button
+                                        text={step === 0 ? "Home" : "Back"}
+                                        variant="tertiary"
+                                        type="button"
+                                        x={8}
+                                        y={2}
+                                        onClick={handleBack}
+                                        className={`${step !== steps.length - 1 ? "w-fit" : "w-full"} sm:w-fit`}
+                                    />
+
+                                    <Button
+                                        text="Review"
+                                        variant="secondary"
+                                        type="button"
+                                        className="hidden md:block"
+                                        x={8}
+                                        y={2}
+                                        onClick={handleReview}
+                                    />
+
+                                    <Button
+                                        text="Next"
+                                        type="button"
+                                        x={8}
+                                        y={2}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleNext();
+                                        }}
+                                    />
+                                </>
+                            ) : (
+                                <>
+                                    <Button
+                                        text="I'm Not Done Yet"
+                                        variant="tertiary"
+                                        type="button"
+                                        x={8}
+                                        y={2}
+                                        onClick={handleBack}
+                                        className="w-full"
+                                    />
+                                    <Button
+                                        text="Download Source File"
+                                        type="button"
+                                        variant="secondary"
+                                        className="w-full sm:w-fit"
+                                        x={4}
+                                        y={2}
+                                        onClick={handleDownloadSource}
+                                    />
+                                    <Button
+                                        text="Download Resume"
+                                        variant="primary"
+                                        type="submit"
+                                        form="resume-form"
+                                        x={8}
+                                        y={2}
+                                        className="w-full sm:w-fit"
+                                    />
 
 
-                        {step === steps.length - 1 ? (
-                            <Button
-                                text="Download Resume"
-                                variant="primary"
-                                type="submit"
-                                form="resume-form"
-                                x={8}
-                                y={2}
-                                className="w-full sm:w-fit"
-                            />
-                        ) : (
-                            <div className="flex gap-4">
+                                </>
+                            )}
 
 
-                                <Button
-                                    text="Next"
-                                    type="button"
-                                    x={8}
-                                    y={2}
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        handleNext();
-                                    }}
-                                />
-                            </div>
-
-                        )}    
-                
-                    </div>
+                        </div>
                 </div>
 
 
