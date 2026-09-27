@@ -17,7 +17,7 @@ const siteUrl = "https://resumelyonline.vercel.app";
 export const metadata: Metadata = {
     metadataBase: new URL(siteUrl),
     title: {
-        default: "Resumely — Create Professional Technical Resumes",
+        default: "Resumely | Create Professional Technical Resumes",
         template: "%s | Resumely",
     },
     applicationName: "Resumely",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
         "CV builder",
         "resume creator",
     ],
-    authors:[
+    authors: [
         {
             name: "Luca Mawyin",
             url: siteUrl,
@@ -55,13 +55,13 @@ export const metadata: Metadata = {
             "max-image-preview": "large",
         },
     },
-    alternates:{
+    alternates: {
         canonical: "/",
     },
     openGraph: {
         type: "website",
         url: "/",
-        title: "Resumely — Create Professional Technical Resumes",
+        title: "Resumely | Create Professional Technical Resumes",
         description,
         siteName: "Resumely",
         images: [
@@ -69,30 +69,27 @@ export const metadata: Metadata = {
                 url: "/og-image.png",
                 width: 800,
                 height: 800,
-                alt: "Resumely — Create professional technical resumes",
+                alt: "Resumely | Create professional technical resumes",
             },
         ],
     },
 
     twitter: {
         card: "summary_large_image",
-        title: "Resumely — Create Professional Technical Resumes",
+        title: "Resumely | Create Professional Technical Resumes",
         description,
         images: ["/og-image.png"],
     },
 };
 
 export default function RootLayout({
-	children,
+    children,
 }: Readonly<{
-	children: React.ReactNode;
+    children: React.ReactNode;
 }>) {
-	return (
-		<html lang="en">
-			<head>
-				<link rel="icon" href="/favicon.svg" type="image/svg+xml"></link>
-			</head>
-			<body className={`${inter.className} flex min-h-screen flex-col`}>
+    return (
+        <html lang="en">
+            <body className={`${inter.className} flex min-h-screen flex-col`}>
                 <main className="
                     relative 
                     flex
@@ -103,11 +100,11 @@ export default function RootLayout({
                         <Suspense fallback={null}>
                             {children}
                         </Suspense>
-                        
-                    </NotificationProvider>       
-                    <Footer/>             
+
+                    </NotificationProvider>
+                    <Footer />
                 </main>
             </body>
-		</html>
-	);
+        </html>
+    );
 }

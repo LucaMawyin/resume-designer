@@ -127,28 +127,34 @@ export default function Home(){
             ">
                 <div>
                     <h1>Resumely</h1>
+
                     <p className="text-sm text-gray-400">
                         By{" "}
-                        <a 
+                        <a
                             className="hover:text-gray-800"
                             href="https://lucamawyin.com"
-                            target="__blank"
+                            target="_blank"
                             rel="noopener noreferrer"
-                        >   
+                        >
                             Luca Mawyin
-                        </a>                            
+                        </a>
                     </p>
-                    <p className="text-sm text-gray-400 mt-6">
-                        <a 
+
+                    <p className="mt-4 max-w-md text-gray-600">
+                        An open-source resume builder for creating clean, professional,
+                        customizable resumes.
+                    </p>
+
+                    <p className="mt-6 text-sm text-gray-400">
+                        <a
                             className="hover:text-gray-800"
                             href="https://github.com/LucaMawyin/resumely"
-                            target="__blank"
+                            target="_blank"
                             rel="noopener noreferrer"
-                        >   
+                        >
                             Source Code
-                        </a>       
+                        </a>
                     </p>
-                
                 </div>
 
                 {savedResume && savedResume.length > 0 && (

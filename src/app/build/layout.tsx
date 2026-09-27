@@ -1,12 +1,16 @@
-import Footer from "@/components/Footer";
 import "../globals.css";
-import { Inter } from "next/font/google";
-import { NotificationProvider } from "@/components/NotificationProvider";
 import BuildShell from "@/components/BuildShell";
+import type { Metadata } from "next";
 
-const inter = Inter({
-    subsets: ["latin"],
-});
+export const metadata: Metadata = {
+    title: "Resume Builder",
+    description:
+        "Build and customize your professional technical resume with Resumely.",
+    robots: {
+        index: false,
+        follow: false,
+    },
+};
 
 export default function BuildLayout({
     children,
@@ -14,12 +18,7 @@ export default function BuildLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <div className={`
-            ${inter.className}
-            flex
-            flex-col
-            w-full
-        `}>
+        <div className="flex w-full flex-col">
             <BuildShell>
                 {children}
             </BuildShell>
