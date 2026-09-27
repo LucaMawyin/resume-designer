@@ -95,23 +95,57 @@ def create_pdf(form, output_file:str):
             if i > 0:
                 doc.append(NoEscape(r"\vspace{-0.3em}"))
 
-            bullets = [escape_latex(b) for b in parse_bullets(item.get("content", ""))]
+            bullets = [
+                escape_latex(b)
+                for b in parse_bullets(item.get("content", ""))
+            ]
+
+            title = item.get("title", "").strip()
+            subtitle = item.get("subtitle", "").strip()
+            date_start = item.get("dateStart", "").strip()
+            date_end = item.get("dateEnd", "").strip()
+
+            # Build title / subtitle
+            left_side = rf"\textbf{{{escape_latex(title)}}}"
+
+            if subtitle:
+                left_side += (
+                    rf" $|$ \textit{{{escape_latex(subtitle)}}}"
+                )
+
+            # Build date range
+            if date_start and date_end:
+                date = (
+                    f"{normalize_month_year(date_start)} -- "
+                    f"{normalize_month_year(date_end)}"
+                )
+            elif date_start:
+                date = normalize_month_year(date_start)
+            elif date_end:
+                date = normalize_month_year(date_end)
+            else:
+                date = ""
 
             doc.append(NoEscape(rf"""
             \begin{{tabularx}}{{\textwidth}}{{X r}}
-                \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{escape_latex(item["subtitle"])}}} & {normalize_month_year(item["dateStart"])} -- {normalize_month_year(item["dateEnd"])}
+                {left_side} & {date}
             \end{{tabularx}}
             \vspace{{-1.75em}}
             """))
 
-            # Parsing bullet Points 
             if bullets:
-                doc.append(NoEscape(r"\begin{itemize}[leftmargin=2.5em, rightmargin=1em, itemsep=-0.2em]"))
+                doc.append(
+                    NoEscape(
+                        r"\begin{itemize}"
+                        r"[leftmargin=2.5em, rightmargin=1em, itemsep=-0.2em]"
+                    )
+                )
+
                 for b in bullets:
                     doc.append(NoEscape(rf"\item {b}"))
-                    
+
                 doc.append(NoEscape(r"\end{itemize}"))
-        
+
     # --------------------
     # EXPERIENCE
     # --------------------
@@ -124,21 +158,53 @@ def create_pdf(form, output_file:str):
             if i > 0:
                 doc.append(NoEscape(r"\vspace{-0.3em}"))
 
-            bullets = [escape_latex(b) for b in parse_bullets(item.get("content", ""))]
+            bullets = [
+                escape_latex(b)
+                for b in parse_bullets(item.get("content", ""))
+            ]
+
+            title = item.get("title", "").strip()
+            subtitle = item.get("subtitle", "").strip()
+            date_start = item.get("dateStart", "").strip()
+            date_end = item.get("dateEnd", "").strip()
+
+            left_side = rf"\textbf{{{escape_latex(title)}}}"
+
+            if subtitle:
+                left_side += (
+                    rf" $|$ \textit{{{escape_latex(subtitle)}}}"
+                )
+
+            if date_start and date_end:
+                date = (
+                    f"{normalize_month_year(date_start)} -- "
+                    f"{normalize_month_year(date_end)}"
+                )
+            elif date_start:
+                date = normalize_month_year(date_start)
+            elif date_end:
+                date = normalize_month_year(date_end)
+            else:
+                date = ""
 
             doc.append(NoEscape(rf"""
             \begin{{tabularx}}{{\textwidth}}{{X r}}
-                \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{escape_latex(item["subtitle"])}}} & {normalize_month_year(item["dateStart"])} -- {normalize_month_year(item["dateEnd"])}
+                {left_side} & {date}
             \end{{tabularx}}
             \vspace{{-1.75em}}
             """))
 
-            # Parsing bullet Points 
             if bullets:
-                doc.append(NoEscape(r"\begin{itemize}[leftmargin=2.5em, rightmargin=1em, itemsep=-0.2em]"))
+                doc.append(
+                    NoEscape(
+                        r"\begin{itemize}"
+                        r"[leftmargin=2.5em, rightmargin=1em, itemsep=-0.2em]"
+                    )
+                )
+
                 for b in bullets:
                     doc.append(NoEscape(rf"\item {b}"))
-                    
+
                 doc.append(NoEscape(r"\end{itemize}"))
 
     # --------------------
@@ -147,45 +213,155 @@ def create_pdf(form, output_file:str):
     projects = non_empty_items(form.get("projects", []))
     if projects:
         doc.append(NoEscape(r"\ressection{Projects}"))
+
         for i, item in enumerate(projects):
 
             if i > 0:
                 doc.append(NoEscape(r"\vspace{-0.3em}"))
 
-            bullets = [escape_latex(b) for b in parse_bullets(item.get("content", ""))]
-            
-            # Space tech items evenly
-            tech = item.get("subtitle", "")
-            tech_list = ", ".join(
-                escape_latex(t.strip())
-                for t in tech.split(",")
-                if t.strip()
+            bullets = [
+                escape_latex(b)
+                for b in parse_bullets(item.get("content", ""))
+            ]
+
+            title = item.get("title", "").strip()
+            tech = item.get("subtitle", "").strip()
+            date_start = item.get("dateStart", "").strip()
+            link = item.get("dateEnd", "").strip()
+
+            # Build title
+            if link:
+                normalized_link = normalize_link(link)
+
+                left_side = (
+                    rf"\textbf{{\href{{{normalized_link}}}"
+                    rf"{{{escape_latex(title)}}}}}"
+                )
+            else:
+                left_side = rf"\textbf{{{escape_latex(title)}}}"
+
+            # Add technologies if provided
+            if tech:
+                tech_list = ", ".join(
+                    escape_latex(t.strip())
+                    for t in tech.split(",")
+                    if t.strip()
+                )
+
+                if tech_list:
+                    left_side += rf" $|$ \textit{{{tech_list}}}"
+
+            # Build date
+            date = (
+                normalize_month_year(date_start)
+                if date_start
+                else ""
             )
 
-            # Add hyperlink if given
-            link = normalize_link(item.get("dateEnd", "").strip())
-            if link:
-                doc.append(NoEscape(rf"""
-                \begin{{tabularx}}{{\textwidth}}{{X r}}
-                    \textbf{{\href{{{link}}}{{{escape_latex(item["title"])}}}}} $|$ \textit{{{tech_list}}} & {normalize_month_year(item["dateStart"])}
-                \end{{tabularx}}
-                \vspace{{-1.75em}}
-                """))
-            else:
-                doc.append(NoEscape(rf"""
-                \begin{{tabularx}}{{\textwidth}}{{X r}}
-                    \textbf{{{escape_latex(item["title"])}}} $|$ \textit{{{tech_list}}} & {normalize_month_year(item["dateStart"])}
-                \end{{tabularx}}
-                \vspace{{-1.75em}}
-                """))
+            doc.append(NoEscape(rf"""
+            \begin{{tabularx}}{{\textwidth}}{{X r}}
+                {left_side} & {date}
+            \end{{tabularx}}
+            \vspace{{-1.75em}}
+            """))
 
-            # Parsing bullet Points 
+            # Bullet points
             if bullets:
-                doc.append(NoEscape(r"\begin{itemize}[leftmargin=2.5em, rightmargin=1em, itemsep=-0.2em]"))
+                doc.append(
+                    NoEscape(
+                        r"\begin{itemize}"
+                        r"[leftmargin=2.5em, rightmargin=1em, itemsep=-0.2em]"
+                    )
+                )
+
                 for b in bullets:
                     doc.append(NoEscape(rf"\item {b}"))
-                    
+
                 doc.append(NoEscape(r"\end{itemize}"))
+
+    # --------------------
+    # CUSTOM SECTIONS
+    # --------------------
+    custom_sections = form.get("custom", [])
+
+    for section in custom_sections:
+        section_title = section.get("title", "").strip()
+        items = non_empty_items(section.get("items", []))
+
+        if not section_title or not items:
+            continue
+
+        doc.append(
+            NoEscape(
+                rf"\ressection{{{escape_latex(section_title)}}}"
+            )
+        )
+
+        for i, item in enumerate(items):
+
+            if i > 0:
+                doc.append(NoEscape(r"\vspace{-0.3em}"))
+
+            title = item.get("title", "").strip()
+            subtitle = item.get("subtitle", "").strip()
+            date_start = item.get("dateStart", "").strip()
+            date_end = item.get("dateEnd", "").strip()
+            content = item.get("content", "").strip()
+
+            bullets = [
+                escape_latex(b)
+                for b in parse_bullets(content)
+            ]
+
+            # Date display
+            if date_start and date_end:
+                date = (
+                    f"{normalize_month_year(date_start)} -- "
+                    f"{normalize_month_year(date_end)}"
+                )
+            elif date_start:
+                date = normalize_month_year(date_start)
+            elif date_end:
+                date = normalize_month_year(date_end)
+            else:
+                date = ""
+
+            # Title / subtitle / date
+            left_side = rf"\textbf{{{escape_latex(title)}}}"
+
+            if subtitle:
+                left_side += (
+                    rf" $|$ \textit{{{escape_latex(subtitle)}}}"
+                )
+
+            doc.append(
+                NoEscape(
+                    rf"""
+                    \begin{{tabularx}}{{\textwidth}}{{X r}}
+                        {left_side} & {date}
+                    \end{{tabularx}}
+                    \vspace{{-1.75em}}
+                    """
+                )
+            )
+
+            # Content / bullet points
+            if bullets:
+                doc.append(
+                    NoEscape(
+                        r"\begin{itemize}"
+                        r"[leftmargin=2.5em, rightmargin=1em, itemsep=-0.2em]"
+                    )
+                )
+
+                for bullet in bullets:
+                    doc.append(
+                        NoEscape(rf"\item {bullet}")
+                    )
+
+                doc.append(
+                    NoEscape(r"\end{itemize}")
+                )
 
     # --------------------
     # TECHNICAL SKILLS
@@ -220,6 +396,7 @@ def create_pdf(form, output_file:str):
     )
 
     return file_path + ".pdf"
+    
 
 # -------------------------
 # CREATE INITIAL DOCUMENT
@@ -251,10 +428,12 @@ def create_document(name: str):
     \usepackage{{fancyhdr}}
 
     \newcommand{{\ressection}}[1]{{
-        \noindent\textbf{{\large #1}}
-        \par\vspace{{0.3em}}
-        \hrule
-        \vspace{{0.6em}}
+        {{
+            \noindent\MakeUppercase{{#1}}
+            \par\vspace{{0.3em}}
+            \hrule
+            \vspace{{0.6em}}
+        }}
     }}
     \pagenumbering{{gobble}}
 
@@ -289,21 +468,20 @@ def format_phone(number: str) -> str:
 # PARSE BULLET POINTS
 # -------------------------
 def parse_bullets(text: str):
+    bullets = []
 
-    # Get bullet points
-    bullets = [
-        line.strip()
-        for line in text.split("-")
-        if line.strip()
-    ]
+    for line in text.splitlines():
+        line = line.strip()
 
-    # Add a period if there isnt one
-    normalized = [
-        b if b.endswith(".") else b + "."
-        for b in bullets
-    ]
+        if line.startswith("-"):
+            bullet = line[1:].strip()
 
-    return normalized
+            if bullet:
+                bullets.append(
+                    bullet if bullet.endswith(".") else bullet + "."
+                )
+
+    return bullets
 
 # -------------------------
 # NORMALIZE LINKS WITH https://

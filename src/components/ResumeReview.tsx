@@ -1,14 +1,18 @@
 "use client";
 
-import { FormState } from "@/lib/types";
+import { FormState, SectionKey } from "@/lib/types";
 
 type ResumeReviewProps = {
     form: Partial<FormState>;
+    skippedSections: Record<SectionKey, boolean>;
+    skippedCustom: boolean;
     onEdit: (step: number) => void;
 };
 
 export default function ResumeReview({
     form,
+    skippedSections,
+    skippedCustom,
     onEdit
 }: ResumeReviewProps) {
     return (
@@ -42,7 +46,7 @@ export default function ResumeReview({
                 <p>{form.number}</p>                
             </div>
 
-            {form.links && form.links.length > 0 && (
+            {form.links && (
                 <div 
                     className="
                         cursor-pointer
@@ -54,34 +58,45 @@ export default function ResumeReview({
                     onClick={() => onEdit(1)}
                 >
                     <h3>Links</h3>
-                    {form.links?.map((link, index) => (
-                        <div key={index} className="flex flex-col gap-2">
-                            <h4>{link.title}</h4>
+                    {skippedSections.links ? (
+                        <p className="text-gray-400 italic">
+                            Skipped (won't appear on resume).
+                        </p>
+                    ) : form.links.length === 0 ? (
+                        <p className="text-gray-400 italic">
+                            No links added (won't appear on resume).
+                        </p>
+                    ) : (
+                        form.links?.map((link, index) => (
+                            <div key={index} className="flex flex-col gap-2">
+                                <h4>{link.title}</h4>
 
-                            <a
-                                href={
-                                    link.href.startsWith("http://") ||
-                                    link.href.startsWith("https://")
-                                        ? link.href
-                                        : `https://${link.href}`
-                                }
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => e.stopPropagation()}
-                                className="
-                                    text-blue-400 
-                                    hover:text-blue-700
-                                    w-fit
-                                "
-                            >
-                                {link.href}
-                            </a>
-                        </div>
-                    ))}
+                                <a
+                                    href={
+                                        link.href.startsWith("http://") ||
+                                        link.href.startsWith("https://")
+                                            ? link.href
+                                            : `https://${link.href}`
+                                    }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="
+                                        text-blue-400 
+                                        hover:text-blue-700
+                                        w-fit
+                                    "
+                                >
+                                    {link.href}
+                                </a>
+                            </div>
+                        ))                       
+                    )}
+
                 </div>
             )}
 
-            {form.education && form.education.length > 0 && (
+            {form.education && (
                 <div 
                     className="
                         cursor-pointer
@@ -93,34 +108,51 @@ export default function ResumeReview({
                     onClick={() => onEdit(2)}
                 >
                     <h3>Education</h3>
-                    {form.education?.map((item, index) => (
-                        <div 
-                            key={index} 
-                            className="flex flex-col gap-2"
-                        >
-                            <h4 
-                                className="
-                                    flex 
-                                    flex-col 
-                                    sm:flex-row 
-                                    sm:flex-wrap 
-                                    gap-x-2
-                            ">
-                                {item.title}
-                                <span>
-                                    {item.dateStart} - {item.dateEnd}
-                                </span>
-                            </h4>
-                            <i>{item.subtitle}</i>
-                            {item.content.split(/\r?\n/).map((line, i) => (
-                                <p key={i}>{line}</p>
-                            ))}
-                        </div>
-                    ))}                
+                    {skippedSections.education ? (
+                        <p className="text-gray-400 italic">
+                            Skipped (won't appear on resume).
+                        </p>
+                    ) : form.education.length === 0 ? (
+                        <p className="text-gray-400 italic">
+                            No education added (won't appear on resume).
+                        </p>
+                    ) : (
+                        form.education?.map((item, index) => (
+                            <div 
+                                key={index} 
+                                className="flex flex-col gap-2"
+                            >
+                                <h4 
+                                    className="
+                                        flex 
+                                        flex-col 
+                                        sm:flex-row 
+                                        sm:flex-wrap 
+                                        gap-x-2
+                                ">
+                                    {item.title}
+                                    {(item.dateStart || item.dateEnd) && (
+                                        <span>
+                                            {item.dateStart}
+                                            {item.dateStart && item.dateEnd
+                                                ? " - "
+                                                : ""}
+                                            {item.dateEnd}
+                                        </span>
+                                    )}
+                                </h4>
+                                <i>{item.subtitle}</i>
+                                {item.content.split(/\r?\n/).map((line, i) => (
+                                    <p key={i}>{line}</p>
+                                ))}
+                            </div>
+                        ))     
+                    )}
+          
                 </div>
             )}
 
-            {form.experience && form.experience.length > 0 && (
+            {form.experience && (
                 <div 
                     className="
                         cursor-pointer
@@ -132,34 +164,50 @@ export default function ResumeReview({
                     onClick={() => onEdit(3)}
                 >
                     <h3>Experience</h3>
-                    {form.experience?.map((item, index) => (
-                        <div 
-                            key={index} 
-                            className="flex flex-col gap-2"
-                        >
-                            <h4 
-                                className="
-                                    flex 
-                                    flex-col 
-                                    sm:flex-row 
-                                    sm:flex-wrap 
-                                    gap-x-2
-                            ">
-                                {item.title}
-                                <span>
-                                    {item.dateStart} - {item.dateEnd}
-                                </span>
-                            </h4>
-                            <i>{item.subtitle}</i>
-                            {item.content.split(/\r?\n/).map((line, i) => (
-                                <p key={i}>{line}</p>
-                            ))}
-                        </div>
-                    ))}
+                    {skippedSections.experience ? (
+                        <p className="text-gray-400 italic">
+                            Skipped (won't appear on resume).
+                        </p>
+                    ) : form.experience.length === 0 ? (
+                        <p className="text-gray-400 italic">
+                            No experience added (won't appear on resume).
+                        </p>
+                    ) : (
+                        form.experience?.map((item, index) => (
+                            <div 
+                                key={index} 
+                                className="flex flex-col gap-2"
+                            >
+                                <h4 
+                                    className="
+                                        flex 
+                                        flex-col 
+                                        sm:flex-row 
+                                        sm:flex-wrap 
+                                        gap-x-2
+                                ">
+                                    {item.title}
+                                    {(item.dateStart || item.dateEnd) && (
+                                        <span>
+                                            {item.dateStart}
+                                            {item.dateStart && item.dateEnd
+                                                ? " - "
+                                                : ""}
+                                            {item.dateEnd}
+                                        </span>
+                                    )}
+                                </h4>
+                                <i>{item.subtitle}</i>
+                                {item.content.split(/\r?\n/).map((line, i) => (
+                                    <p key={i}>{line}</p>
+                                ))}
+                            </div>
+                        ))
+                    )}
                 </div>
             )}
 
-            {form.projects && form.projects.length > 0 && (
+            {form.projects && (
                 <div 
                     className="
                         cursor-pointer
@@ -171,56 +219,67 @@ export default function ResumeReview({
                     onClick={() => onEdit(4)}
                 >
                     <h3>Projects</h3>
-                    {form.projects?.map((item, index) => (
-                        <div 
-                            key={index} 
-                            className="flex flex-col gap-2"
-                        >
-                            <h4 
-                                className="
-                                    flex 
-                                    flex-col 
-                                    sm:flex-row 
-                                    sm:flex-wrap 
-                                    gap-x-2
-                            ">
-                                {item.title}
-                                <span>
-                                    {item.dateStart}
-                                </span>
-                            </h4>
-                            <i>{item.subtitle}</i>
-                            {item.dateEnd.length > 0 && (
-                                <a
-                                    href={
-                                        item.dateEnd.startsWith("http://") ||
-                                        item.dateEnd.startsWith("https://")
-                                            ? item.dateEnd
-                                            : `https://${item.dateEnd}`
-                                    }
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    onClick={(e) => e.stopPropagation()}
+                    {skippedSections.projects ? (
+                        <p className="text-gray-400 italic">
+                            Skipped (won't appear on resume).
+                        </p>
+                    ) : form.projects.length === 0 ? (
+                        <p className="text-gray-400 italic">
+                            No projects added (won't appear on resume).
+                        </p>
+                    ) : (
+                        form.projects?.map((item, index) => (
+                            <div 
+                                key={index} 
+                                className="flex flex-col gap-2"
+                            >
+                                <h4 
                                     className="
-                                        text-blue-400 
-                                        hover:text-blue-700 
-                                        w-fit
+                                        flex 
+                                        flex-col 
+                                        sm:flex-row 
+                                        sm:flex-wrap 
+                                        gap-x-2
+                                ">
+                                    {item.title}
+                                    <span>
+                                        {item.dateStart}
+                                    </span>
+                                </h4>
+                                <i>{item.subtitle}</i>
+                                {item.dateEnd.length > 0 && (
+                                    <a
+                                        href={
+                                            item.dateEnd.startsWith("http://") ||
+                                            item.dateEnd.startsWith("https://")
+                                                ? item.dateEnd
+                                                : `https://${item.dateEnd}`
+                                        }
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="
+                                            text-blue-400 
+                                            hover:text-blue-700 
+                                            w-fit
 
-                                    "
-                                >
-                                    {item.dateEnd}
-                                </a>
+                                        "
+                                    >
+                                        {item.dateEnd}
+                                    </a>
 
-                            )}
-                            {item.content.split(/\r?\n/).map((line, i) => (
-                                <p key={i}>{line}</p>
-                            ))}
-                        </div>
-                    ))}
+                                )}
+                                {item.content.split(/\r?\n/).map((line, i) => (
+                                    <p key={i}>{line}</p>
+                                ))}
+                            </div>
+                        ))
+                    )}
+
                 </div>
             )}
 
-            {form.skills && form.skills.length > 0 && (
+            {form.skills && (
                 <div 
                     className="
                         cursor-pointer
@@ -232,12 +291,98 @@ export default function ResumeReview({
                     onClick={() => onEdit(5)}
                 >
                     <h3>Technical Skills</h3>
-                    {form.skills?.map((skill, index) => (
-                        <div key={index} className="flex flex-col gap-2">
-                            <h4>{skill.title}</h4>
-                            <p>{skill.content}</p>
-                        </div>
-                    ))}
+                    {skippedSections.skills ? (
+                        <p className="text-gray-400 italic">
+                            Skipped (won't appear on resume).
+                        </p>
+                    ) : form.skills.length === 0 ? (
+                        <p className="text-gray-400 italic">
+                            No skills added (won't appear on resume).
+                        </p>
+                    ) : (
+                        form.skills?.map((skill, index) => (
+                            <div key={index} className="flex flex-col gap-2">
+                                <h4>{skill.title}</h4>
+                                <p>{skill.content}</p>
+                            </div>
+                        ))
+                    )}
+
+                </div>
+            )}
+
+            {form.custom && (
+                <div
+                    className="
+                        cursor-pointer
+                        rounded-xl
+                        p-2
+                        transition
+                        hover:bg-black/5
+                    "
+                    onClick={() => onEdit(6)}
+                >
+                    <h3>Custom Sections</h3>
+                    {skippedCustom ? (
+                        <p className="text-gray-400 italic">
+                            Skipped (won't appear on resume).
+                        </p>
+                    ) : form.custom.length === 0 ? (
+                        <p className="text-gray-400 italic">
+                            No custom section added (won't appear on resume).
+                        </p>
+                    ) : (
+                        form.custom.map((section, sectionIndex) => (
+                            <div
+                                key={sectionIndex}
+                                className="flex flex-col gap-4"
+                            >
+                                <h4>{section.title}</h4>
+
+                                {section.items.map((item, itemIndex) => (
+                                    <div
+                                        key={itemIndex}
+                                        className="flex flex-col gap-2"
+                                    >
+                                        <h4
+                                            className="
+                                                flex
+                                                flex-col
+                                                sm:flex-row
+                                                sm:flex-wrap
+                                                gap-x-2
+                                            "
+                                        >
+                                            {item.title}
+
+                                            {(item.dateStart || item.dateEnd) && (
+                                                <span>
+                                                    {item.dateStart}
+                                                    {item.dateStart && item.dateEnd
+                                                        ? " - "
+                                                        : ""}
+                                                    {item.dateEnd}
+                                                </span>
+                                            )}
+                                        </h4>
+
+                                        {item.subtitle && (
+                                            <i>{item.subtitle}</i>
+                                        )}
+
+                                        {item.content &&
+                                            item.content
+                                                .split(/\r?\n/)
+                                                .map((line, i) => (
+                                                    <p key={i}>{line}</p>
+                                                ))}
+                                    </div>
+                                ))}
+                            </div>
+                        ))                        
+                    )}
+
+
                 </div>
             )}
 

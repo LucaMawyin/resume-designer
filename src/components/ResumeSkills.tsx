@@ -71,7 +71,7 @@ export default function ResumeSkill({
                     </div>
                 ))}
                 <Button
-                    text="Add"
+                    text={`Add ${items.length === 0 ? "An" : "Another"} Item`}
                     type="button"
                     variant="secondary"
                     x={8}
@@ -83,7 +83,7 @@ export default function ResumeSkill({
 
             {removeIndex !== null && (
                 <ConfirmationModal
-                    title="Remove Skill?"
+                    title="Remove From Skills?"
                     message={
                         <>
                             <p>

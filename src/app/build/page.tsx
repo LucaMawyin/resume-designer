@@ -1,6 +1,7 @@
 "use client";
 
 import Button from "@/components/Button";
+import CustomSections from "@/components/CustomSection";
 import { useNotifications } from "@/components/NotificationProvider";
 import PersonalInformation from "@/components/PersonalInformation";
 import ResumeItem from "@/components/ResumeItem";
@@ -13,6 +14,7 @@ import {
     ResumeSkill as ResumeSkillData,
     FormState,
     SectionKey,
+    CustomSection,
 } from "@/lib/types";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -49,6 +51,19 @@ const emptySectionItem: {
         title: "",
         content: "",
     },
+};
+
+const emptyCustomSection: CustomSection = {
+    title: "",
+    items: [],
+};
+
+const emptyCustomItem: ResumeItemData = {
+    title: "",
+    subtitle: "",
+    dateStart: "",
+    dateEnd: "",
+    content: "",
 };
 
 const initialForm: FormState = {
@@ -99,6 +114,21 @@ const initialForm: FormState = {
             content: "",
         },
     ],
+
+    custom: [
+        {
+            title: "",
+            items: [
+                {
+                    title: "",
+                    subtitle: "",
+                    dateStart: "",
+                    dateEnd: "",
+                    content: "",
+                },
+            ],
+        },
+    ],
 };
 
 export default function Build(){
@@ -119,6 +149,7 @@ export default function Build(){
         projects: false,
         skills: false,
     });
+    const [skippedCustom, setSkippedCustom] = useState(false);
 
     const [loaded, setLoaded] = useState(false);
 
@@ -150,45 +181,51 @@ export default function Build(){
             const isSavedResume =
                 searchParams.get("saved") === "true";
 
-                const loadedForm: FormState = {
-                    ...initialForm,
-                    ...parsed,
+            const loadedForm: FormState = {
+                ...initialForm,
+                ...parsed,
 
-                    links: ensureSectionItems(
+                links: isSavedResume
+                    ? (parsed.links ?? []).filter(isItemFilled)
+                    : ensureSectionItems(
                         "links",
-                        isSavedResume
-                            ? (parsed.links ?? []).filter(isItemFilled)
-                            : parsed.links ?? initialForm.links
+                        parsed.links ?? initialForm.links
                     ),
 
-                    education: ensureSectionItems(
+                education: isSavedResume
+                    ? (parsed.education ?? []).filter(isItemFilled)
+                    : ensureSectionItems(
                         "education",
-                        isSavedResume
-                            ? (parsed.education ?? []).filter(isItemFilled)
-                            : parsed.education ?? initialForm.education
+                        parsed.education ?? initialForm.education
                     ),
 
-                    experience: ensureSectionItems(
+                experience: isSavedResume
+                    ? (parsed.experience ?? []).filter(isItemFilled)
+                    : ensureSectionItems(
                         "experience",
-                        isSavedResume
-                            ? (parsed.experience ?? []).filter(isItemFilled)
-                            : parsed.experience ?? initialForm.experience
+                        parsed.experience ?? initialForm.experience
                     ),
 
-                    projects: ensureSectionItems(
+                projects: isSavedResume
+                    ? (parsed.projects ?? []).filter(isItemFilled)
+                    : ensureSectionItems(
                         "projects",
-                        isSavedResume
-                            ? (parsed.projects ?? []).filter(isItemFilled)
-                            : parsed.projects ?? initialForm.projects
+                        parsed.projects ?? initialForm.projects
                     ),
 
-                    skills: ensureSectionItems(
+                skills: isSavedResume
+                    ? (parsed.skills ?? []).filter(isItemFilled)
+                    : ensureSectionItems(
                         "skills",
-                        isSavedResume
-                            ? (parsed.skills ?? []).filter(isItemFilled)
-                            : parsed.skills ?? initialForm.skills
+                        parsed.skills ?? initialForm.skills
                     ),
-                };
+
+                custom: isSavedResume
+                    ? (parsed.custom ?? [])
+                    : parsed.custom?.length > 0
+                        ? parsed.custom
+                        : initialForm.custom,
+            };
 
             setForm(loadedForm);
         }
@@ -216,16 +253,40 @@ export default function Build(){
             return;
         }
 
-        const nameValid = form.name.trim() !== "";
-        const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email);
-        const numberValid = form.number.trim() !== "";
+        const firstIncompleteStep = steps.findIndex((_, index) => {
+            if (index === steps.length - 1) {
+                return false;
+            }
 
-        if (nameValid && emailValid && numberValid) {
-            notify("Successfully loaded saved resume","success");
-            setStep(6);
+            const currentStep = steps[index];
+            const key = currentStep.key;
+
+            // Intentionally skipped sections are valid
+            if (key && skippedSections[key]) {
+                return false;
+            }
+
+            if (
+                currentStep.title === "Custom Sections" &&
+                skippedCustom
+            ) {
+                return false;
+            }
+
+            return !isStepValid(index);
+        });
+
+        if (firstIncompleteStep !== -1) {
+            setStep(firstIncompleteStep);
+            return;
         }
-        
-    }, [loaded, searchParams, form.name, form.email, form.number]);
+
+        notify("Successfully loaded saved resume", "success");
+        setStep(steps.length - 1);
+    }, [
+        loaded,
+        searchParams,
+    ]);
 
     const [showStepTitle, setShowStepTitle] = useState(false);
 
@@ -353,6 +414,118 @@ export default function Build(){
     };
 
     // -------------------------
+    // Custom Sections
+    // -------------------------
+
+    const handleCustomSectionChange = (
+        sectionIndex: number,
+        value: string,
+    ) => {
+        setForm(prev => {
+            const custom = [...prev.custom];
+
+            custom[sectionIndex] = {
+                ...custom[sectionIndex],
+                title: value,
+            };
+
+            return {
+                ...prev,
+                custom,
+            };
+        });
+    };
+
+    const handleCustomSectionAdd = () => {
+        setForm(prev => ({
+            ...prev,
+            custom: [
+                ...prev.custom,
+                {
+                    ...emptyCustomSection,
+                    items: [],
+                },
+            ],
+        }));
+    };
+
+    const handleCustomSectionRemove = (sectionIndex: number) => {
+        setForm(prev => ({
+            ...prev,
+            custom: prev.custom.filter(
+                (_, index) => index !== sectionIndex
+            ),
+        }));
+    };
+
+    const handleCustomItemChange = (
+        sectionIndex: number,
+        itemIndex: number,
+        key: keyof ResumeItemData,
+        value: string,
+    ) => {
+        setForm(prev => {
+            const custom = [...prev.custom];
+            const items = [...custom[sectionIndex].items];
+
+            items[itemIndex] = {
+                ...items[itemIndex],
+                [key]: value,
+            };
+
+            custom[sectionIndex] = {
+                ...custom[sectionIndex],
+                items,
+            };
+
+            return {
+                ...prev,
+                custom,
+            };
+        });
+    };
+
+    const handleCustomItemAdd = (sectionIndex: number) => {
+        setForm(prev => {
+            const custom = [...prev.custom];
+
+            custom[sectionIndex] = {
+                ...custom[sectionIndex],
+                items: [
+                    ...custom[sectionIndex].items,
+                    { ...emptyCustomItem },
+                ],
+            };
+
+            return {
+                ...prev,
+                custom,
+            };
+        });
+    };
+
+    const handleCustomItemRemove = (
+        sectionIndex: number,
+        itemIndex: number,
+    ) => {
+        setForm(prev => {
+            const custom = [...prev.custom];
+
+            custom[sectionIndex] = {
+                ...custom[sectionIndex],
+                items: custom[sectionIndex].items.filter(
+                    (_, index) => index !== itemIndex
+                ),
+            };
+
+            return {
+                ...prev,
+                custom,
+            };
+        });
+    };
+
+    // -------------------------
     // Submit Form
     // -------------------------
 
@@ -381,6 +554,20 @@ export default function Build(){
             ...(skippedSections.skills
                 ? {}
                 : { skills: form.skills.filter(isItemFilled) }),
+
+            ...(skippedCustom
+                ? {}
+                : {
+                    custom: form.custom
+                        .map(section => ({
+                            title: section.title,
+                            items: section.items.filter(isItemFilled),
+                        }))
+                        .filter(section =>
+                            section.title.trim() !== "" ||
+                            section.items.length > 0
+                        ),
+                }),
         };
     };
 
@@ -438,6 +625,11 @@ export default function Build(){
             experience: form.experience.filter(isItemFilled),
             projects: form.projects.filter(isItemFilled),
             skills: form.skills.filter(isItemFilled),
+
+            custom: form.custom.map(section => ({
+                title: section.title,
+                items: section.items.filter(isItemFilled),
+            })),
         };
     };
 
@@ -490,46 +682,7 @@ export default function Build(){
     };
 
     const isStepValid = (stepIndex: number) => {
-        const currentStep = steps[stepIndex];
-        if (!currentStep) return false;
-
-        if (currentStep.key === "projects") {
-            return form.projects.every(item =>
-                isFilled({
-                    ...item,
-                    dateEnd: true,
-                })
-            );
-        }
-
-        return isFilled(currentStep.data);
-    };
-
-    const canNavigateToStep = (targetStep: number) => {
-        // Going backward is always allowed
-        if (targetStep <= step) {
-            return true;
-        }
-
-        // Every step between the current step and target must be valid
-        for (let i = step; i < targetStep; i++) {
-            const key = steps[i].key;
-
-            // Review doesn't need validation
-            if (!key && i === steps.length - 1) {
-                continue;
-            }
-
-            if (!isStepValid(i)) {
-                return false;
-            }
-        }
-
-        return true;
-    };
-
-    const isCurrentStepValid = () => {
-        return isStepValid(step);
+        return getInvalidFields(stepIndex).length === 0;
     };
 
     const getNavigationBlocker = (targetStep: number) => {
@@ -571,9 +724,124 @@ export default function Build(){
         });
     };
 
+    const getInvalidFields = (stepIndex: number): string[] => {
+        const currentStep = steps[stepIndex];
+
+        if (!currentStep) {
+            return [];
+        }
+
+        if (
+            currentStep.key === "education" ||
+            currentStep.key === "experience" ||
+            currentStep.key === "projects"
+        ) {
+            const items = form[currentStep.key];
+
+            const invalidFields: string[] = [];
+
+            items.forEach((item, index) => {
+                if (!item.title.trim()) {
+                    invalidFields.push(`Item ${index + 1} title`);
+                }
+
+                if (!item.content.trim()) {
+                    invalidFields.push(`Item ${index + 1} content`);
+                }
+            });
+
+            return invalidFields;
+        }
+
+        if (currentStep.title === "Custom Sections") {
+            const invalidFields: string[] = [];
+
+            form.custom.forEach((section, sectionIndex) => {
+                if (!section.title.trim()) {
+                    invalidFields.push(
+                        `Custom section ${sectionIndex + 1} title`
+                    );
+                }
+
+                section.items.forEach((item, itemIndex) => {
+                    if (!item.title.trim()) {
+                        invalidFields.push(
+                            `Section ${sectionIndex + 1}, item ${itemIndex + 1} title`
+                        );
+                    }
+
+                    if (!item.content.trim()) {
+                        invalidFields.push(
+                            `Section ${sectionIndex + 1}, item ${itemIndex + 1} content`
+                        );
+                    }
+                });
+            });
+
+            return invalidFields;
+        }
+
+        if (currentStep.title === "Personal Information") {
+            const invalidFields: string[] = [];
+
+            if (!form.name.trim()) {
+                invalidFields.push("Name");
+            }
+
+            if (!form.email.trim()) {
+                invalidFields.push("Email");
+            }
+
+            if (!form.number.trim()) {
+                invalidFields.push("Phone number");
+            }
+
+            return invalidFields;
+        }
+
+        if (currentStep.key === "links") {
+            const invalidFields: string[] = [];
+
+            form.links.forEach((link, index) => {
+                if (!link.title.trim()) {
+                    invalidFields.push(`Link ${index + 1} title`);
+                }
+
+                if (!link.href.trim()) {
+                    invalidFields.push(`Link ${index + 1} URL`);
+                }
+            });
+
+            return invalidFields;
+        }
+
+        if (currentStep.key === "skills") {
+            const invalidFields: string[] = [];
+
+            form.skills.forEach((skill, index) => {
+                if (!skill.title.trim()) {
+                    invalidFields.push(`Skill ${index + 1} title`);
+                }
+
+                if (!skill.content.trim()) {
+                    invalidFields.push(`Skill ${index + 1} content`);
+                }
+            });
+
+            return invalidFields;
+        }
+
+        return [];
+    };
+
     const handleNext = () => {
-        if (!isCurrentStepValid()) {
-            notify("Please fill in all fields", "error");
+        const invalidFields = getInvalidFields(step);
+
+        if (invalidFields.length > 0) {
+            notify(
+                `Missing: ${invalidFields.join(", ")}`,
+                "error"
+            );
             return;
         }
 
@@ -589,20 +857,61 @@ export default function Build(){
         const nextStep = step + 1;
 
         ensureSectionItem(nextStep);
-        notify(`Successfully added ${steps[step].title}`,"success")
+
+        notify(
+            `Successfully added ${steps[step].title}`,
+            "success"
+        );
+
         setStep(nextStep);
+
         window.scrollTo({
             top: 0,
             behavior: "smooth",
         });
+
+        if (steps[step].title === "Custom Sections") {
+            setSkippedCustom(false);
+        }
     };
 
     const handleReview = () => {
-        if (!isCurrentStepValid()) {
-            notify("Please fill in all fields", "error");
-            return;
+        for (let i = 0; i < steps.length - 1; i++) {
+            const currentStep = steps[i];
+            const key = currentStep.key;
+
+            // Skipped regular section is valid
+            if (key && skippedSections[key]) {
+                continue;
+            }
+
+            // Skipped custom section is valid
+            if (
+                currentStep.title === "Custom Sections" &&
+                skippedCustom
+            ) {
+                continue;
+            }
+
+            // Found the first incomplete section
+            if (!isStepValid(i)) {
+                notify(
+                    `${currentStep.title} is not completed`,
+                    "error"
+                );
+
+                setStep(i);
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth",
+                });
+
+                return;
+            }
         }
 
+        // Current section has been completed
         const key = steps[step].key;
 
         if (key) {
@@ -612,7 +921,12 @@ export default function Build(){
             }));
         }
 
+        if (steps[step].title === "Custom Sections") {
+            setSkippedCustom(false);
+        }
+
         setStep(steps.length - 1);
+
         window.scrollTo({
             top: 0,
             behavior: "smooth",
@@ -637,6 +951,10 @@ export default function Build(){
             top: 0,
             behavior: "smooth",
         });
+
+        if (steps[step].title === "Custom Sections") {
+            setSkippedCustom(true);
+        }
     };
 
     const handleBack = () => {
@@ -803,11 +1121,29 @@ export default function Build(){
             ),
         },
         {
+            title: "Custom Sections",
+            key: null,
+            data: form.custom,
+            component: (
+                <CustomSections
+                    items={form.custom}
+                    onSectionChange={handleCustomSectionChange}
+                    onSectionAdd={handleCustomSectionAdd}
+                    onSectionRemove={handleCustomSectionRemove}
+                    onItemChange={handleCustomItemChange}
+                    onItemAdd={handleCustomItemAdd}
+                    onItemRemove={handleCustomItemRemove}
+                />
+            ),
+        },
+        {
             title: "Review",
             key: null,
             component: (
                 <ResumeReview
-                    form={getSubmittedForm()}
+                    form={form}
+                    skippedSections={skippedSections}
+                    skippedCustom={skippedCustom}
                     onEdit={setStep}
                 />
             ),
@@ -987,7 +1323,7 @@ export default function Build(){
                             justify-between
                         ">
                             <h2 className="w-fit">{steps[step].title}</h2>
-                            {steps[step].key && (
+                            {(steps[step].key || steps[step].title === "Custom Sections") && (
                                 <Button
                                     text="skip"
                                     variant="transparent"

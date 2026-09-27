@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect } from "react";
 import Button from "./Button";
 
 type ConfirmationModalProps = {
@@ -16,12 +16,23 @@ export default function ConfirmationModal({
     onConfirm,
     onCancel,
 }: ConfirmationModalProps) {
+
+    useEffect(() => {
+        const originalOverflow = document.body.style.overflow;
+
+        document.body.style.overflow = "hidden";
+
+        return () => {
+            document.body.style.overflow = originalOverflow;
+        };
+    }, []);
+
     return (
         <div 
             className="
                 fixed
                 inset-0
-                z-50
+                z-100
                 flex
                 items-center
                 justify-center

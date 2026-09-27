@@ -77,7 +77,7 @@ export default function ResumeLink({
                     </div>
                 ))}
                 <Button
-                    text="Add"
+                    text={`Add ${items.length === 0 ? "An" : "Another"} Item`}
                     type="button"
                     variant="secondary"
                     x={8}
@@ -89,7 +89,7 @@ export default function ResumeLink({
 
             {removeIndex !== null && (
                 <ConfirmationModal
-                    title="Remove Link?"
+                    title="Remove From Links?"
                     message={
                         <>
                             <p>

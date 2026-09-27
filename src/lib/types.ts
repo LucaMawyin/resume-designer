@@ -7,6 +7,7 @@ export type FormState = {
     experience: ResumeItem[];
     projects: ResumeItem[];
     skills: ResumeSkill[];
+    custom: CustomSection[];
 };
 
 export type ResumeItem = {
@@ -28,6 +29,7 @@ export type ResumeItemProp = {
     ) => void;
     onAdd: () => void;
     onRemove: (index: number) => void;
+    isCustom?: boolean;
 };
 
 export type ResumeSection = {
@@ -93,3 +95,29 @@ export type SectionKey =
     | "experience" 
     | "projects" 
     | "skills";
+
+export type CustomSection = {
+    title: string;
+    items: ResumeItem[];
+};
+
+export type CustomSectionsProps = {
+    items: CustomSection[];
+    onSectionChange: (
+        sectionIndex: number,
+        value: string
+    ) => void;
+    onSectionAdd: () => void;
+    onSectionRemove: (sectionIndex: number) => void;
+    onItemChange: (
+        sectionIndex: number,
+        itemIndex: number,
+        key: keyof ResumeItem,
+        value: string
+    ) => void;
+    onItemAdd: (sectionIndex: number) => void;
+    onItemRemove: (
+        sectionIndex: number,
+        itemIndex: number
+    ) => void;
+};

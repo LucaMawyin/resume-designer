@@ -11,7 +11,8 @@ export default function ResumeItem({
     onChange,
     onAdd,
     onRemove,
-} : ResumeItemProp ){
+    isCustom = false,
+}: ResumeItemProp) {
 
     const [removeIndex, setRemoveIndex] = useState<number | null>(null);
 
@@ -37,17 +38,17 @@ export default function ResumeItem({
                             flex-col
                         "
                     >
-                        <label htmlFor={`title-${index}`}>Title</label>
+                        <label htmlFor={`title-${index}`}>Title {isCustom && "(required)"}</label>
                         <input
                             type="text"
                             id={`title-${index}`}
                             name={`title-${index}`}
                             value={item.title}
                             onChange={(e) => onChange(index, "title", e.target.value)}
-                            placeholder={`Enter ${title} name`}
+                            placeholder={`Enter ${title.length > 0 ? `${title} ` : ""}name`}
                         />
 
-                        <label htmlFor={`subtitle-${index}`}>Subtitle</label>
+                        <label htmlFor={`subtitle-${index}`}>Subtitle (optional)</label>
                         <input
                             type="text"
                             id={`subtitle-${index}`}
@@ -57,7 +58,7 @@ export default function ResumeItem({
                             placeholder="Institution, Role, etc..."
                         />
 
-                        <label htmlFor={`dateStart-${index}`}>Start Date</label>
+                        <label htmlFor={`dateStart-${index}`}>Start Date (optional)</label>
                         <input
                             type="text"
                             id={`dateStart-${index}`}
@@ -68,7 +69,7 @@ export default function ResumeItem({
                         />
 
                         <label htmlFor={`dateEnd-${index}`}>
-                            {title === "Projects" ? "URL" : "End Date"}
+                            {title === "Projects" ? "URL" : "End Date"} (optional)
                         </label>
 
                         <input
@@ -79,11 +80,12 @@ export default function ResumeItem({
                             onChange={(e) =>
                                 onChange(index, "dateEnd", e.target.value)
                             }
-                            placeholder={
+                            placeholder={`${
                                 title === "Projects"
                                     ? "https://github.com/..."
                                     : "Enter end date"
-                            }
+                                } (or leave empty)
+                            `}
                         />
 
                         <label>Content (Point Form)</label>
@@ -98,7 +100,7 @@ export default function ResumeItem({
                         />
                         {items.length > 1 && (
                             <Button
-                                text="Remove"
+                                text="Remove Item"
                                 type="button"
                                 variant="red"
                                 x={8}
@@ -110,7 +112,7 @@ export default function ResumeItem({
                     </div>
                 ))}
                 <Button
-                    text="Add"
+                    text={`Add ${items.length === 0 ? "An" : "Another"} Item`}
                     type="button"
                     variant="secondary"
                     x={8}
@@ -122,7 +124,7 @@ export default function ResumeItem({
 
             {removeIndex !== null && (
                 <ConfirmationModal
-                    title={`Remove ${title}?`}
+                    title={`Remove From ${title}?`}
                     message={
                         <>
                             <p>

@@ -11,7 +11,7 @@ export default function Header({ showStepTitle }: HeaderProps) {
                 justify-center
                 sticky
                 top-0
-                z-100
+                z-60
                 bg-(--bg)
                 h-[10dvh]
                 border-b
