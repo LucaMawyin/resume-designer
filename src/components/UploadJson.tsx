@@ -25,9 +25,13 @@ export default function UploadJson({
     }
 
     const processFile = (file: File) => {
+        const fileName = file.name.toLowerCase();
 
-        if (!file.name.toLowerCase().endsWith(".json")) {
-            notify("Please select a JSON file.", "error");
+        const isJson = fileName.endsWith(".json");
+        const isTxt = fileName.endsWith(".txt");
+
+        if (!isJson && !isTxt) {
+            notify("Please select a valid JSON or TXT file.", "error");
             return;
         }
 
@@ -38,7 +42,7 @@ export default function UploadJson({
                 const data = JSON.parse(reader.result as string);
                 onUpload(data, file);
             } catch {
-                notify("The file contains invalid JSON.", "error");
+                notify("The file contains invalid JSON. TXT files must contain valid JSON.", "error");
             }
         };
 
@@ -102,14 +106,14 @@ export default function UploadJson({
             ">
 
                 <h2 className="text-xl font-semibold">
-                    Upload JSON
+                    Upload Source File
                 </h2>
 
 
                 <input
                     ref={inputRef}
                     type="file"
-                    accept=".json,application/json"
+                    accept=".json,.txt,application/json,text/plain"
                     onChange={handleFileChange}
                     className="hidden"
                 />
@@ -151,7 +155,7 @@ export default function UploadJson({
                     <div className="mb-3 text-4xl">📄</div>
 
                     <p className="font-medium">
-                        Drop your JSON file here
+                        Drop your source file here
                     </p>
 
                     <p className="mt-1 text-sm text-gray-500">
@@ -159,7 +163,7 @@ export default function UploadJson({
                     </p>
 
                     <p className="mt-3 text-xs text-gray-400">
-                        JSON files only
+                        JSON or TXT files containing valid JSON
                     </p>
                 </div>
 
