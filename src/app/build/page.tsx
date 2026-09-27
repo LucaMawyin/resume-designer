@@ -639,14 +639,14 @@ export default function Build(){
             const json = JSON.stringify(sourceForm, null, 4);
 
             const blob = new Blob([json], {
-                type: "application/json",
+                type: "application/x-resumely",
             });
 
             const url = window.URL.createObjectURL(blob);
 
             const a = document.createElement("a");
             a.href = url;
-            a.download = "resume.json";
+            a.download = "resume.resumely";
 
             document.body.appendChild(a);
             a.click();

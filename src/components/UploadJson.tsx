@@ -27,11 +27,12 @@ export default function UploadJson({
     const processFile = (file: File) => {
         const fileName = file.name.toLowerCase();
 
+        const isResumely = fileName.endsWith(".resumely");
         const isJson = fileName.endsWith(".json");
         const isTxt = fileName.endsWith(".txt");
 
-        if (!isJson && !isTxt) {
-            notify("Please select a valid JSON or TXT file.", "error");
+        if (!isResumely && !isJson && !isTxt) {
+            notify("Please select a valid Resumely, JSON, or TXT file.", "error");
             return;
         }
 
@@ -42,7 +43,10 @@ export default function UploadJson({
                 const data = JSON.parse(reader.result as string);
                 onUpload(data, file);
             } catch {
-                notify("The file contains invalid JSON. TXT files must contain valid JSON.", "error");
+                notify(
+                    "The file contains invalid JSON.",
+                    "error"
+                );
             }
         };
 
@@ -113,7 +117,7 @@ export default function UploadJson({
                 <input
                     ref={inputRef}
                     type="file"
-                    accept=".json,.txt,application/json,text/plain"
+                    accept=".resumely,.json,.txt,application/json,text/plain"
                     onChange={handleFileChange}
                     className="hidden"
                 />
@@ -163,7 +167,7 @@ export default function UploadJson({
                     </p>
 
                     <p className="mt-3 text-xs text-gray-400">
-                        JSON or TXT files containing valid JSON
+                        Resumely, JSON, or TXT source files
                     </p>
                 </div>
 
