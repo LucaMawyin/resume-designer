@@ -45,7 +45,7 @@ export default function ResumeReview({
             <div className="flex flex-col gap-2 rounded-xl p-2">
                 <h3>Resume Margins</h3>
 
-                <div className="flex flex-wrap gap-2 justify-center">
+                <div className="flex flex-nowrap gap-2 justify-center">
                     {marginOptions.map((option) => (
                         <Button
                             key={option.value}
@@ -53,6 +53,7 @@ export default function ResumeReview({
                             text={option.label}
                             onClick={() => onMarginChange(option.value)}
                             className={`
+                                flex-1
                                 border
                                 transition
                                 ${
