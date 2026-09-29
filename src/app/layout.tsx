@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import { NotificationProvider } from "@/components/NotificationProvider";
 import { Suspense } from "react";
 import { Metadata } from "next";
+import SmoothScroll from "@/components/SmoothScroll";
 
 
 const inter = Inter({
@@ -90,6 +91,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${inter.className} flex min-h-screen flex-col`}>
+                <SmoothScroll/>
                 <main className="
                     relative 
                     flex

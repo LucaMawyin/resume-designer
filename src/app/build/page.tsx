@@ -957,6 +957,19 @@ export default function Build(){
                     "error"
                 );
 
+                if (currentStep.title === "Custom Sections") {
+                    ensureCustomSection();
+                } else if (currentStep.key) {
+                    ensureSectionItem(i);
+                }
+
+                setStepDirection(
+                    i > step
+                        ? "forward"
+                        : "backward"
+                );
+
+                previousStep.current = step;
                 setStep(i);
 
                 window.scrollTo({
