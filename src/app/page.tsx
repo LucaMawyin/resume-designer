@@ -172,7 +172,7 @@ export default function Home(){
                     onClick={() => setShowUploadJson(true)}
                 />
 
-                    <p className="mt-4 text-sm text-gray-400 flex justify-center">
+                    <p className="text-sm text-gray-400 flex justify-center">
                         <a
                             className="hover:text-gray-800"
                             href="https://github.com/LucaMawyin/resumely"
