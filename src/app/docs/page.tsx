@@ -191,7 +191,7 @@ export default function Documentation() {
                                 className="
                                     squircle
                                     border
-                                    border-gray-100
+                                    border-gray-200
                                     bg-gray-50
                                     p-5
                                 "
@@ -233,6 +233,8 @@ export default function Documentation() {
                         mt-6
                         squircle
                         bg-gray-50
+                        border
+                        border-gray-200
                         p-5
                     ">
                         <p className="text-sm font-bold text-gray-700">
@@ -288,7 +290,7 @@ export default function Documentation() {
                         mt-6
                         squircle
                         border
-                        border-yellow-100
+                        border-yellow-200
                         bg-yellow-50
                         p-5
                         text-sm
