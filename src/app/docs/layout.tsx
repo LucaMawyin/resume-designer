@@ -1,15 +1,14 @@
 import "../globals.css";
-import BuildShell from "@/components/BuildShell";
 import Header from "@/components/Header";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Resume Builder",
+    title: "Documentation",
     description:
-        "Build and customize your professional technical resume with Resumely.",
+        "Learn how to use Resumely to create, customize, save, and export your resume.",
     robots: {
-        index: false,
-        follow: false,
+        index: true,
+        follow: true,
     },
 };
 
