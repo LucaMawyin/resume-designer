@@ -67,7 +67,38 @@ def create_pdf(form, output_file:str):
     formatted_number = format_phone(number)
     email = form.get("email","")
 
-    doc = create_document(name)
+    layout_sizes = {
+        "small": {
+            "margin": "0.5in",
+            "section_before": "0.2em",
+            "section_after": "0.4em",
+        },
+        "medium": {
+            "margin": "0.75in",
+            "section_before": "0.4em",
+            "section_after": "0.7em",
+        },
+        "large": {
+            "margin": "1in",
+            "section_before": "0.6em",
+            "section_after": "1em",
+        },
+    }
+    
+    margin_size = form.get("marginSize", "small")
+    layout = layout_sizes.get(margin_size, layout_sizes["small"])
+
+    margin = layout["margin"]
+    section_before = layout["section_before"]
+    section_after = layout["section_after"]
+
+    doc = create_document(
+        name,
+        margin,
+        section_before,
+        section_after
+    )
+
     links = non_empty_items(form.get("links", []))
     links_latex = " $|$ ".join(
         rf"\href{{{normalize_link(link['href'])}}}{{{link['title']}}}"
@@ -401,14 +432,19 @@ def create_pdf(form, output_file:str):
 # -------------------------
 # CREATE INITIAL DOCUMENT
 # -------------------------
-def create_document(name: str):
+def create_document(
+    name: str,
+    margin: str,
+    section_before: str,
+    section_after: str
+):
     doc = Document(
         documentclass="article",
         document_options=["letterpaper"]
     )
 
     doc.preamble.append(NoEscape(rf"""
-    \usepackage[margin=0.5in]{{geometry}}
+    \usepackage[margin={margin}]{{geometry}}
     \usepackage{{booktabs}}
     \usepackage[table]{{xcolor}}
 
@@ -430,9 +466,9 @@ def create_document(name: str):
     \newcommand{{\ressection}}[1]{{
         {{
             \noindent\MakeUppercase{{#1}}
-            \par\vspace{{0.3em}}
+            \par\vspace{{{section_before}}}
             \hrule
-            \vspace{{0.6em}}
+            \vspace{{{section_after}}}
         }}
     }}
     \pagenumbering{{gobble}}

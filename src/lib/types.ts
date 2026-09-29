@@ -2,6 +2,7 @@ export type FormState = {
     name: string;
     email: string;
     number: string;
+    marginSize: MarginSize;
     links: ResumeLink[];
     education: ResumeItem[];
     experience: ResumeItem[];
@@ -121,3 +122,5 @@ export type CustomSectionsProps = {
         itemIndex: number
     ) => void;
 };
+
+export type MarginSize = "small" | "medium" | "large";

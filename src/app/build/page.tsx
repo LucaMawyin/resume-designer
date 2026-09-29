@@ -72,7 +72,7 @@ const initialForm: FormState = {
     name: "",
     email: "",
     number: "",
-
+    marginSize: "small",
     links: [
         {
             title: "",
@@ -529,6 +529,13 @@ export default function Build(){
         });
     };
 
+    const handleMarginChange = (value: FormState["marginSize"]) => {
+        setForm(prev => ({
+            ...prev,
+            marginSize: value,
+        }));
+    };
+
     // -------------------------
     // Submit Form
     // -------------------------
@@ -538,6 +545,7 @@ export default function Build(){
             name: form.name,
             email: form.email,
             number: form.number,
+            marginSize: form.marginSize,
 
             ...(skippedSections.links
                 ? {}
@@ -623,7 +631,7 @@ export default function Build(){
             name: form.name,
             email: form.email,
             number: form.number,
-
+            marginSize: form.marginSize,
             links: form.links.filter(isItemFilled),
             education: form.education.filter(isItemFilled),
             experience: form.experience.filter(isItemFilled),
@@ -1207,6 +1215,7 @@ export default function Build(){
                     skippedSections={skippedSections}
                     skippedCustom={skippedCustom}
                     onEdit={setStep}
+                    onMarginChange={handleMarginChange}
                 />
             ),
         },

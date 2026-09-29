@@ -1,19 +1,31 @@
 "use client";
 
 import { FormState, SectionKey } from "@/lib/types";
+import Button from "./Button";
 
 type ResumeReviewProps = {
     form: Partial<FormState>;
     skippedSections: Record<SectionKey, boolean>;
     skippedCustom: boolean;
     onEdit: (step: number) => void;
+    onMarginChange: (value: FormState["marginSize"]) => void;
 };
+
+const marginOptions: {
+    value: FormState["marginSize"];
+    label: string;
+}[] = [
+    { value: "small", label: "Compact" },
+    { value: "medium", label: "Standard" },
+    { value: "large", label: "Spacious" },
+];
 
 export default function ResumeReview({
     form,
     skippedSections,
     skippedCustom,
-    onEdit
+    onEdit,
+    onMarginChange
 }: ResumeReviewProps) {
     return (
         <div className="
@@ -30,6 +42,31 @@ export default function ResumeReview({
             [&_h3]:mb-2
             [&_h4]:mt-2
         ">
+            <div className="flex flex-col gap-2 rounded-xl p-2">
+                <h3>Resume Margins</h3>
+
+                <div className="flex flex-wrap gap-2 justify-center">
+                    {marginOptions.map((option) => (
+                        <Button
+                            key={option.value}
+                            type="button"
+                            text={option.label}
+                            onClick={() => onMarginChange(option.value)}
+                            className={`
+                                border
+                                transition
+                                ${
+                                    form.marginSize === option.value
+                                        ? "border-black bg-black text-white hover:bg-zinc-800"
+                                        : "border-gray-300 bg-white text-black! hover:bg-gray-100"
+                                }
+                            `}
+                            x={4}
+                            y={2}
+                        />
+                    ))}
+                </div>
+            </div>
             <div 
                 className="
                     cursor-pointer
