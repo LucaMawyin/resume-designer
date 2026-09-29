@@ -155,6 +155,11 @@ export default function Build(){
 
     const [loaded, setLoaded] = useState(false);
 
+    const previousStep = useRef(step);
+    const [stepDirection, setStepDirection] = useState<"forward" | "backward">(
+        "forward"
+    );
+
     const isItemFilled = (item: object) => {
         return Object.values(item).some(
             value =>
@@ -742,6 +747,14 @@ export default function Build(){
             return;
         }
 
+        setStepDirection(
+            targetStep > step
+                ? "forward"
+                : "backward"
+        );
+
+        previousStep.current = step;
+
         if (target.title === "Custom Sections") {
             ensureCustomSection();
         } else if (target.key) {
@@ -1006,10 +1019,7 @@ export default function Build(){
             return;
         }
 
-        const previousStep = step - 1;
-
-        ensureSectionItem(previousStep);
-        navigateToStep(previousStep);
+        navigateToStep(step - 1);
     };
 
     const steps: {
@@ -1370,7 +1380,20 @@ export default function Build(){
                             )}
 
                         </div>
-                        {steps[step].component}
+                        <div
+                            key={step}
+                            className={`
+                                flex
+                                flex-col
+                                ${
+                                    stepDirection === "forward"
+                                        ? "step-transition-forward"
+                                        : "step-transition-backward"
+                                }
+                            `}
+                        >
+                            {steps[step].component}
+                        </div>
 
                 
                     </form>
