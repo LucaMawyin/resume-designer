@@ -145,24 +145,7 @@ export default function Home(){
                         customizable resumes.
                     </p>
 
-                    <p className="mt-6 text-sm text-gray-400">
-                        <a
-                            className="hover:text-gray-800"
-                            href="https://github.com/LucaMawyin/resumely"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            Source Code
-                        </a>
-                        &nbsp;&bull;&nbsp;
-                        <a
-                            className="hover:text-gray-800"
-                            href="/docs"
-                            rel="noopener noreferrer"
-                        >
-                            Documentation
-                        </a>
-                    </p>
+
                 </div>
 
                 {savedResume && savedResume.length > 0 && (
@@ -188,6 +171,25 @@ export default function Home(){
                     y={2}
                     onClick={() => setShowUploadJson(true)}
                 />
+
+                    <p className="mt-4 text-sm text-gray-400 flex justify-center">
+                        <a
+                            className="hover:text-gray-800"
+                            href="https://github.com/LucaMawyin/resumely"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            Source Code
+                        </a>
+                        &nbsp;&bull;&nbsp;
+                        <a
+                            className="hover:text-gray-800"
+                            href="/docs"
+                            rel="noopener noreferrer"
+                        >
+                            Documentation
+                        </a>
+                    </p>
             </div>
 
             {showNewResumeConfirm && (
