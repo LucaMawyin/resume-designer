@@ -32,6 +32,13 @@ export default function Footer() {
 
                 <div className="flex items-center gap-6">
                     <a
+                        href="/docs"
+                        className="hover:text-gray-800"
+                    >
+                        Docs
+                    </a>
+
+                    <a
                         href="https://github.com/LucaMawyin"
                         target="_blank"
                         rel="noopener noreferrer"

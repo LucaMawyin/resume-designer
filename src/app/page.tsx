@@ -154,6 +154,14 @@ export default function Home(){
                         >
                             Source Code
                         </a>
+                        &nbsp;&bull;&nbsp;
+                        <a
+                            className="hover:text-gray-800"
+                            href="/docs"
+                            rel="noopener noreferrer"
+                        >
+                            Documentation
+                        </a>
                     </p>
                 </div>
 
