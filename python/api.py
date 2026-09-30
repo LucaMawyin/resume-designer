@@ -9,13 +9,6 @@ import uuid
 app = Flask(__name__)
 CORS(app)
 
-'''
-Commands:
-
-cd .\python\
-flask --app api run --debug
-'''
-
 def non_empty_items(items):
     return [
         item for item in items
@@ -27,26 +20,28 @@ def generate():
     form = request.get_json() or {}
 
     output_file = uuid.uuid4().hex
-    pdf_path = create_pdf(form,output_file)
+    pdf_path = None
 
-    # Store PDF to ram
-    with open(pdf_path, "rb") as f:
-        pdf_bytes = f.read()
-        
-    # Delete files from storage
     try:
-        cleanup_output_files(output_file)
-    except Exception as e:
-        print("Cleanup error:", e)
+        pdf_path = create_pdf(form, output_file)
 
+        with open(pdf_path, "rb") as f:
+            pdf_bytes = f.read()
 
-    return Response(
-        pdf_bytes,
-        mimetype="application/pdf",
-        headers={
-            "Content-Disposition": "attachment; filename=resume.pdf"
-        }
-    )
+        return Response(
+            pdf_bytes,
+            mimetype="application/pdf",
+            headers={
+                "Content-Disposition": "attachment; filename=resume.pdf"
+            }
+        )
+
+    # File cleanup
+    finally:
+        try:
+            cleanup_output_files(output_file)
+        except Exception as e:
+            app.logger.exception("Cleanup error: %s", e)
 
 # -------------------------
 # DELETE ALL FILES
@@ -564,4 +559,9 @@ def normalize_month_year(value: str) -> str:
     return value
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True, use_reloader=False)
+    app.run(
+        host="0.0.0.0", 
+        port=5000, 
+        debug=True, 
+        use_reloader=True,
+    )
